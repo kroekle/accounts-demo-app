@@ -11,15 +11,24 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
 
+      - name: Set version tag
+        id: vars
+        run: echo "VERSION=$(grep -oP 'version \K[^\s]*'
+ 
+      - name: Change to accounts-service directory
+        run: cd accounts-service
+        
       - name: Build Docker image with Jib
-        run: ./gradlew :accounts-service:jib --image=ghcr.io/${{ github.repository }}/accounts-service:latest
+        run: ./gradlew jib --image=ghcr.io/${{ github.repository }}/accounts-service:latest
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -28,5 +37,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push Docker image
+      - name: Push Docker image with version tag
+        run: docker push ghcr.io/${{ github.repository }}/accounts-service:${{ env.VERSION }}
+
+      - name: Push Docker image with latest tag
         run: docker push ghcr.io/${{ github.repository }}/accounts-service:latest
