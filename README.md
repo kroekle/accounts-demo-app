@@ -80,7 +80,7 @@ Add this to your hosts file with the host name provided for the app (the default
 ```bash
 127.0.0.1       accounts.norsebank.com
 ```
-Start the minikube tunnel (in my experience each time you destroy/create the entire terraform script the tunnel needs to be restarted)
+Start the minikube tunnel (in my experience each time you destroy/create the entire terraform script the tunnel needs to be restarted).  The tunnel command will likely ask for your password in order to bind to port 80.
 
 ```bash
 minikube tunnel
