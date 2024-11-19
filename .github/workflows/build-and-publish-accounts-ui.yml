@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #   - 'accounts-ui/**'
+    paths:
+      - 'accounts-ui/**'
       
 jobs:
   build:
