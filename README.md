@@ -71,18 +71,18 @@ Ingressing to the application will be dependant on how your cluster is setup.  A
 If you are using minikube the following step should work for you (tested on an Intel Mac)
 Get the gateway ip address
 
-bash```
+```bash
 kubectl get gateways.gateway.networking.k8s.io gateway -n accounts-demo -ojsonpath='{.status.addresses[0].value}'
 ```
 
 Add this to your hosts file with the host name provided for the app (the default is accounts.norsebank.com)
 
-bash```
+```bash
 127.0.0.1       accounts.norsebank.com
 ```
 Start the minikube tunnel (in my experience each time you destroy/create the entire terraform script the tunnel needs to be restarted)
 
-bash```
+```bash
 minikube tunnel
 ```
 Now you should be able to go to the host in your browser (and curl the endpoints)
