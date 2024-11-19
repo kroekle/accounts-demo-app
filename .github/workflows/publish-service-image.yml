@@ -22,13 +22,13 @@ jobs:
 
       - name: Set version tag
         id: vars
-        run: echo "VERSION=$(grep -oP 'version \K[^\s]*'
- 
-      - name: Change to accounts-service directory
-        run: cd accounts-service
-        
-      - name: Build Docker image with Jib
-        run: ./gradlew jib --image=ghcr.io/${{ github.repository }}/accounts-service:latest
+        run: echo "VERSION=$(grep -oP 'version \K[^\s]*' settings.gradle)" >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        run: |
+          cd accounts-service
+          ./gradlew jib --image=ghcr.io/${{ github.repository }}/accounts-service:${{ env.VERSION }}
+          docker tag ghcr.io/${{ github.repository }}/accounts-service:${{ env.VERSION }} ghcr.io/${{ github.repository }}/accounts-service:latest
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
