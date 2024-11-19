@@ -1,0 +1,96 @@
+-- Create the manager table
+CREATE TABLE manager (
+    manager_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    region VARCHAR(20) NOT NULL CHECK (region IN ('WEST', 'NORTH', 'SOUTH', 'EAST', 'ASIA', 'AFRICA', 'AUSTRALIA', 'EUROPE', 'NA', 'SA')),
+    us BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create the account table
+CREATE TABLE account (
+    account_id SERIAL PRIMARY KEY,
+    holder_name VARCHAR(100) NOT NULL,
+    balance DECIMAL(15, 2) NOT NULL,
+    manager_id INT,
+    account_status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (account_status IN ('ACTIVE', 'INACTIVE')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (manager_id) REFERENCES manager(manager_id)
+);
+
+-- Insert mock data into the manager table
+INSERT INTO manager (name, region, us) VALUES
+('Alice Johnson', 'WEST', true),
+('Bob Smith', 'NORTH', true),
+('Charlie Brown', 'SOUTH', true),
+('Diana Prince', 'EAST', true),
+('Ethan Hunt', 'ASIA', false),
+('Fiona Gallagher', 'AFRICA', false),
+('George Clooney', 'AUSTRALIA', false),
+('Hannah Montana', 'EUROPE', false),
+('Ian Somerhalder', 'NA', false),
+('Jack Sparrow', 'SA', false);
+
+
+-- Insert mock data into the account table with higher balances
+INSERT INTO account (holder_name, balance, manager_id) VALUES
+('John Doe', 21021000.75, 1),
+('Jane Doe', 4004000.30, 2),
+('Jim Beam', 26026000.45, 3),
+('Jack Daniels', 29450.60, 4),
+('Johnny Walker', 31200.85, 5),
+('Jill Valentine', 34800.20, 6),
+('Jake Peralta', 40200.55, 7),
+('Amy Santiago', 45700.90, 8),
+('Terry Jeffords', 50300.25, 9),
+('Rosa Diaz', 55800.60, 10),
+('Michael Scott', 1005000.75, 1),
+('Dwight Schrute', 2002000.30, 2),
+('Jim Halpert', 3003000.45, 3),
+('Pam Beesly', 4004000.60, 4),
+('Stanley Hudson', 5005000.85, 5),
+('Kevin Malone', 6006000.20, 6),
+('Angela Martin', 7007000.55, 7),
+('Oscar Martinez', 8008000.90, 8),
+('Phyllis Vance', 27800.25, 9),
+('Meredith Palmer', 10010000.60, 10),
+('Creed Bratton', 11011000.75, 1),
+('Ryan Howard', 12012000.30, 2),
+('Kelly Kapoor', 13013000.45, 3),
+('Toby Flenderson', 14014000.60, 4),
+('Darryl Philbin', 15015000.85, 5),
+('Andy Bernard', 16016000.20, 6),
+('Erin Hannon', 17017000.55, 7),
+('Gabe Lewis', 18018000.90, 8),
+('Holly Flax', 19019000.25, 9),
+('Jan Levinson', 20020000.60, 10),
+('David Wallace', 21021000.75, 1),
+('Roy Anderson', 22022000.30, 2),
+('Karen Filippelli', 23023000.45, 3),
+('Charles Miner', 24024000.60, 4),
+('Jo Bennett', 25025000.85, 5),
+('Robert California', 26026000.20, 6),
+('Nellie Bertram', 27027000.55, 7),
+('Clark Green', 28028000.90, 8),
+('Pete Miller', 29029000.25, 9),
+('Nate Nickerson', 30030000.60, 10),
+('Deangelo Vickers', 31031000.75, 1),
+('Todd Packer', 32032000.30, 2),
+('Josh Porter', 33033000.45, 3),
+('Hunter Raymond', 34034000.60, 4),
+('Danny Cordray', 35035000.85, 5),
+('Katy Moore', 36036000.20, 6),
+('Lonny Collins', 37037000.55, 7),
+('Madge Madsen', 38038000.90, 8),
+('Glenn', 39039000.25, 9),
+('Jordan Garfield', 40040000.60, 10),
+('Val Johnson', 41041000.75, 1),
+('Brenda Matlowe', 42042000.30, 2),
+('Sadiq', 43043000.45, 3),
+('Billy Merchant', 44044000.60, 4),
+('Hidetoshi Hasagawa', 45045000.85, 5),
+('Tony Gardner', 46046000.20, 6),
+('Martin Nash', 47047000.55, 7),
+('Hannah Smoterich-Barr', 48048000.90, 8),
+('Rolando', 49049000.25, 9),
+('Cathy Simms', 50050000.60, 10);

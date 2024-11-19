@@ -1,0 +1,93 @@
+* {
+  font-family: Sedan !important;
+}
+
+#root {
+  display: block;
+  width: 100%;
+}
+
+@font-face {
+  font-family: Sedan;
+  src: local(""), url("fonts/SedanSC-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+}
+
+body {
+  width: 60vw;
+}
+
+html, body {
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.w2 {
+  width: 2rem;
+}
+.ml2 {
+  margin-left: .5rem;
+}
+
+.Logo {
+  display:flex;
+  align-items: center;
+}
+
+.Header {
+  display:flex;
+  justify-content: space-between;
+}
+
+h2 {
+  margin-left: 20px;
+}
+
+.App {
+  display:flex;
+}
+
+.MuiTableCell-head {
+  font-weight: bold !important;
+  text-align: center !important;
+}
+
+.user {
+  justify-self: right;
+}   
+
+.right {
+  text-align: right !important;
+}
+
+.center {
+  text-align: center !important;
+}
+
+.login {
+  display: inline-flex;
+}
+
+.login-name {
+  padding-left: 1vw;
+  align-content: center;
+}
+
+.MuiLink-root {
+  padding: .3rem;
+}
+
+.MuiDialogContentText-root {
+  padding-bottom: 2rem;
+}
+
+.MuiFormControl-root {
+  margin: .5rem !important;
+}
