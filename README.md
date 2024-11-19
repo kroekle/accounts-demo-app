@@ -87,5 +87,52 @@ minikube tunnel
 ```
 Now you should be able to go to the host in your browser (and curl the endpoints)
 
+## Understanding the application
+The application is designed to be a true demostration of application Authz policies at mutliple layers in a ReactJS/Java application.  The application is setup like the following:
+
+![app arch](./AppArch.png)
+
+### APIs
+Each service has the same APIs defined with the only difference being the name of the object (v1/accounts for us, v1/gaccounts for global).  The application has the following API paths:
+   * GET / - list all accounts
+   * GET /{id} - find by account id
+   * DELETE /{id] - close account
+   * PATCH /{id] - reopen account
+   * POST /txfr/{fromId}/{toId}/{amount} - transfer funds between accounts
+
+### Policy structure
+The DAS systems and stacks have policy/ingress policies that will authorize both API calls and UI checks with allow & deny rules.  The policy/ui rules has a predefined "check" rule for the UI to call for checking UI Authz, this rule delegates to the policy/ingress rules.
+
+### SQL filtering
+The application is checking two special headers that it uses for filtering sql calls.  These headers are "x-max-balance" and "x-blocked-regions".  The max balance header expects a single string represented number.  The blocked regions header will take a list of string separated by a semi-colon (;).  Each of these are optional, but if present, they will be used in the sql call when listing all accounts.
+
+### JWT tokens
+The JWT tokens are signed with the passphrase "super-secret".  You can decode the claims with the following code:
+```rego
+claims := payload if {
+  io.jwt.verify_hs256(bearer_token, "super-secret")
+  [_, payload, _] := io.jwt.decode(bearer_token)
+}
+
+bearer_token := t if {
+  v := input.attributes.request.http.headers.authorization
+  startswith(v, "Bearer ")
+  t := substring(v, count("Bearer "), -1)
+}
+```
+
+### Sample Rules
+
+Allow closing of accounts for Alice
+```rego
+allow if {
+  input.attributes.request.http.method == "DELETE"
+  input.parsed_path = ["v1", _, account_id]
+  claims.sub == "5002"
+}
+```
+
+
+
 ## Additional Information
 For more information, refer to the individual README files in the `accounts-service` and `accounts-ui` directories.
