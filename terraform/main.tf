@@ -33,20 +33,7 @@ resource "kubernetes_namespace" "accounts" {
     }
   }
 }
-/*
-resource "kubernetes_manifest" "istio_ingress_class" {
-  manifest = {
-    apiVersion = "networking.k8s.io/v1"
-    kind       = "IngressClass"
-    metadata = {
-      name      = "istio"
-    }
-    spec = {
-      controller = "istio.io/ingress-controller"
-    }
-  }
-}
-*/
+
 resource "kubernetes_manifest" "opa_ext_authz" {
   manifest = {
     apiVersion = "networking.istio.io/v1alpha3"
@@ -210,18 +197,6 @@ resource "kubernetes_manifest" "opa_ext_authz" {
   }
 }
 
-/*
-module "httpbin_system" {
-  source = "./systems"
-
-  name             = "Norsebank httpbin Accounts"
-  namespace        = kubernetes_namespace.accounts.metadata[0].name
-  kube_config      = var.kube_config
-  kube_context     = var.kube_context
-  bearer_token     = var.bearer_token
-  server_url       = var.server_url
-}
-*/
 
 resource "styra_stack" "accounts_stack" {
   name                     = "Norsebank All Accounts"
@@ -277,27 +252,12 @@ module "global_system" {
   server_url       = var.server_url
 }
 
-/*
-module "httpbin" {
-   source = "./services"
-
-   name             = "httpbin"
-   namespace        = kubernetes_namespace.accounts.metadata[0].name
-   image            = "kennethreitz/httpbin:latest"
-   kube_config      = var.kube_config
-   kube_context     = var.kube_context
-   eopa_license_key = var.eopa_license_key
-   secret_name      = module.httpbin_system.secret_name
-  
-}
-*/
-
 module "us_accounts" {
    source = "./services"
 
   name             = "us-accounts"
   namespace        = kubernetes_namespace.accounts.metadata[0].name
-  image            = "ghcr.io/styrainc/accounts-svc:0.1"
+  image            = "ghcr.io/kroekle/accounts-demo-app/accounts-service:latest"
   env_vars         = {
    US_CONTROLLER = "true"
    PORT          = "80"
@@ -310,13 +270,12 @@ module "us_accounts" {
   opa_path         = "/usopa"
 }
 
-
 module "global_accounts" {
    source = "./services"
 
   name             = "global-accounts"
   namespace        = kubernetes_namespace.accounts.metadata[0].name
-  image            = "ghcr.io/styrainc/accounts-svc:0.1"
+  image            = "ghcr.io/kroekle/accounts-demo-app/accounts-service:latest"
   env_vars         = {
    US_CONTROLLER = "false"
    PORT          = "80"
@@ -330,20 +289,18 @@ module "global_accounts" {
   opa_path         = "/gopa"
 }
 
-
 module "accounts-ui" {
   source = "./services"
 
   name             = "accounts-ui"
   namespace        = kubernetes_namespace.accounts.metadata[0].name
-  image            = "ghcr.io/styrainc/accounts-ui:0.1"
+  image            = "ghcr.io/kroekle/accounts-demo-app/accounts-ui:latest"
   skip_istio       = true
   kube_config      = var.kube_config
   kube_context     = var.kube_context
   eopa_license_key = var.eopa_license_key
   secret_name      = "none"
 }
-
 
 resource "kubernetes_manifest" "gateway" {
   manifest = {
@@ -358,7 +315,7 @@ resource "kubernetes_manifest" "gateway" {
       listeners = [
         {
           name     = "default"
-          hostname = "accounts.norsebank.com"
+          hostname = var.application_host
           port     = 80
           protocol = "HTTP"
           allowedRoutes = {
@@ -371,103 +328,3 @@ resource "kubernetes_manifest" "gateway" {
     }
   }
 }
-
-// ingress all the things.  I tried doing this with individual ingresses but that didn't go well
-/*
-resource "kubernetes_manifest" "all_of_it_ingress" {
-  manifest = {
-    apiVersion = "networking.k8s.io/v1"
-    kind       = "Ingress"
-    metadata = {
-      name      = "accounts-ingress"
-      namespace = kubernetes_namespace.accounts.metadata[0].name
-    }
-    spec = {
-      ingressClassName = "istio"
-      rules = [
-        {
-          host = "accounts.norsebank.com"
-          http = {
-            paths = [
-              {
-                path     = "/json"
-                pathType = "Prefix"
-                backend = {
-                  service = {
-                    name = "httpbin"
-                    port = {
-                      number = 80
-                    }
-                  }
-                }
-              },
-              {
-                path     = "/v1/accounts"
-                pathType = "Prefix"
-                backend = {
-                  service = {
-                    name = "us-accounts"
-                    port = {
-                      number = 80
-                    }
-                  }
-                }
-              },
-              {
-                path     = "/usopa"
-                pathType = "Prefix"
-                rewrite  = "/"
-                backend = {
-                  service = {
-                    name = "us-accounts"
-                    port = {
-                      number = 8181
-                    }
-                  }
-                }
-              },
-              {
-                path     = "/v1/gaccounts"
-                pathType = "Prefix"
-                backend = {
-                  service = {
-                    name = "global-accounts"
-                    port = {
-                      number = 80
-                    }
-                  }
-                }
-              },
-              {
-                path     = "/gopa"
-                pathType = "Prefix"
-                rewrite  = "/"
-                backend = {
-                  service = {
-                    name = "global-accounts"
-                    port = {
-                      number = 8181
-                    }
-                  }
-                }
-              },              
-              {
-                path     = "/"
-                pathType = "Prefix"
-                backend = {
-                  service = {
-                    name = "accounts-ui"
-                    port = {
-                      number = 80
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  }
-}
-*/

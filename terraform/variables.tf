@@ -24,3 +24,9 @@ variable "eopa_license_key" {
   type      = string
   sensitive = true
 }
+
+variable "application_host" {
+  type      = string
+  sensitive = false
+  default   = "accounts.norsebank.com"
+}

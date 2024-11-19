@@ -29,6 +29,7 @@ resource "kubernetes_deployment" "deployment" {
         container {
           name  = var.name
           image = var.image
+          image_pull_policy = "Always"
           dynamic "env" {
               for_each = var.env_vars
               content {
@@ -41,7 +42,8 @@ resource "kubernetes_deployment" "deployment" {
           for_each = var.skip_istio ? [] : [1]
           content {
             name  = "opa"
-            image = "ghcr.io/styrainc/enterprise-opa:1.29.0"
+            image = "ghcr.io/styrainc/enterprise-opa:latest"
+            image_pull_policy = "Always"
             args = [
               "run",
               "--server",
@@ -206,115 +208,3 @@ resource "kubernetes_manifest" "opa_http_route" {
     }
   }
 }
-
-/*
-resource "kubernetes_manifest" "opa_http_route" {
-  manifest = {
-    apiVersion = "gateway.networking.k8s.io/v1"
-    kind       = "HTTPRoute"
-    metadata = {
-      name      = "opa_${var.name}"
-      namespace = var.namespace
-    }
-    spec = {
-      parentRefs = [
-        {
-          name = "gateway"
-        }
-      ]
-      rules = [
-        {
-          matches = [
-            {
-              path = {
-                type  = "PathPrefix"
-                value = var.opa_path
-              }
-            }
-          ]
-          filters = [
-            {
-              type = "URLRewrite"
-              urlRewrite = {
-                path = {
-                  type = "ReplacePrefixMatch"
-                  replacePrefixMatch = "/"
-                }
-              }
-            }
-          ]
-          backendRefs = [
-            {
-              name = var.name
-              port = 8181
-            }
-          ]
-        }
-      ]
-    }
-  }
-}
-*/
-/*
-resource "kubernetes_manifest" "ingress" {
-  manifest = {
-    apiVersion = "networking.k8s.io/v1"
-    kind       = "Ingress"
-    metadata = {
-      name      = var.name
-      namespace = var.namespace
-    }
-    spec = {
-      ingressClassName = "istio"
-      rules = [
-        {
-          host = "accounts.norsebank.com"
-          http = {
-            paths = [
-              {
-                path     = "/json"
-                pathType = "Prefix"
-                backend = {
-                  service = {
-                    name = var.name
-                    port = {
-                      number = 80
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        }
-      ]
-    }
-  }
-}
-*/
-
-/*
-resource "kubernetes_ingress" "ingress" {
-  metadata {
-    name      = var.name
-    namespace = var.namespace
-    annotations = {
-      "kubernetes.io/ingress.class" = "istio"
-    }
-  }
-
-  spec {
-    rule {
-      host = "accounts.norsebank.com"
-      http {
-        path {
-          path = var.path
-          backend {
-            service_name = var.name
-            service_port = 80
-          }
-        }
-      }
-    }
-  }
-}
-*/

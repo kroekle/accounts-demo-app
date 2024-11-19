@@ -193,4 +193,3 @@ resource "kubernetes_secret" "opa-conf" {
     EOT
   }
 }
-
