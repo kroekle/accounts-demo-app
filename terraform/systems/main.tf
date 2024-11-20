@@ -27,6 +27,7 @@ provider "kubernetes" {
 
 locals {
   secret_name = "opa-conf-${styra_system.system.id}"
+  system_opa_token = regex("token:\\s*([a-zA-Z0-9-_]+)", data.http.opa_config.response_body)[0]
 }
 
 resource "styra_system" "system" {
@@ -123,6 +124,8 @@ resource "styra_policy" "ui_policy" {
 
       import data.main.main
 
+      always := {"allowed":true}
+
       check := s {
         s := main with input as envoy_input
       }
@@ -136,7 +139,9 @@ resource "styra_policy" "ui_policy" {
               "path": input.path
             }
           }
-        }
+        },
+        "parsed_path": parsed_path,
+        "parsed_query": parsed_query
       }
 
       parsed_path := split(trim(split(input.path, "?")[0], "/"), "/")
@@ -182,12 +187,12 @@ resource "kubernetes_secret" "opa-conf" {
       services:
       - credentials:
           bearer:
-            token: ${regex("token:\\s*([a-zA-Z0-9-_]+)", data.http.opa_config.response_body)[0]}
+            token: ${local.system_opa_token}
         name: styra
         url: ${var.server_url}/v1
       - credentials:
           bearer:
-            token: ${regex("token:\\s*([a-zA-Z0-9-_]+)", data.http.opa_config.response_body)[0]}
+            token: ${local.system_opa_token}
         name: styra-bundles
         url: ${var.server_url}/v1/bundles
     EOT

@@ -8,8 +8,13 @@ plugins {
 group = 'com.styra.demo.accounts'
 version = '0.0.1-SNAPSHOT'
 
-targetCompatibility = 21
-sourceCompatibility = 21
+// targetCompatibility = "21"
+// sourceCompatibility = "21"
+// java {
+//     toolchain {
+//         languageVersion = JavaLanguageVersion.of(21)
+//     }
+// }
 
 jib.from.image = 'gcr.io/distroless/java21:latest'
 jib.to.image = 'ghcr.io/kroekle/accounts-service:0.1'

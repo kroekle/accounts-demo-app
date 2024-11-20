@@ -4,6 +4,9 @@ import User from './User';
 import './App.css'
 import myLogo from './images/logo.png'
 import {SnackbarProvider, enqueueSnackbar, closeSnackbar} from 'notistack'
+import Switch from '@mui/material/Switch'
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import {AuthzProvider} from '@styra/opa-react'
 import {OPAClient} from '@styra/opa'
 import Services from './services';
@@ -26,6 +29,7 @@ function App() {
   const [usSvc, setUsSvc] = useState();
   const [gSvc, setGSvc] = useState();
   const [allAccounts, setAllAccounts] = useState([]);
+  const [useAuthz, setUseAuthz] = useState(true);
 
   useEffect(() => {
 
@@ -44,6 +48,9 @@ function App() {
     }
     doIt();
   }, [usSvc, gSvc])
+
+  // useEffect(() => {
+  // }, [useAuthz])
 
   useEffect(() => {
     setUsSvc(new Services("/v1/accounts", token))
@@ -90,37 +97,41 @@ function App() {
             <h1>Norsebank</h1>
           </div>
         </div>
-        <User setToken={setToken}/>
+        <div className='Justify-end'>
+          <User setToken={setToken}/>
+          <FormGroup>
+            <FormControlLabel control={<Switch checked={useAuthz} onChange={() => setUseAuthz(!useAuthz)} />} label="UI Authz" />
+          </FormGroup>
+        </div>
         <SnackbarProvider/>
 
       </div>
       <div className="App">
         <div className="full-width">
-          {/* <AuthzProvider sdk={usSDK} defaultPath="policy/app/check/allowed"> */}
-          <AuthzProvider opaClient={usSDK} defaultPath="policy/ui/check" retry={3} batch={false}>
-            <AccountList 
-              title="US Accounts" 
-              svc={usSvc} 
-              regions={usRegions} 
-              setError={setError} 
-              setBalanceLimit={setBalanceLimit} 
-              setRegionLimit={setRegionLimit} 
-              setWarnings={setWarnings} 
-              allAccounts={allAccounts}
-              />
-          </AuthzProvider>
-          <AuthzProvider opaClient={gSDK} defaultPath="policy/ui/check"  retry={3} batch={true}>
-            <AccountList 
-              title="Global Accounts" 
-              svc={gSvc} 
-              regions={gRegions} 
-              setError={setError} 
-              setBalanceLimit={setBalanceLimit} 
-              setRegionLimit={setRegionLimit} 
-              setWarnings={setWarnings} 
-              allAccounts={allAccounts}
-              />
-          </AuthzProvider>
+            <AuthzProvider opaClient={usSDK} defaultPath={useAuthz?"policy/ui/check":"policy/ui/always"} retry={3} batch={true}>
+              <AccountList 
+                title="US Accounts" 
+                svc={usSvc} 
+                regions={usRegions} 
+                setError={setError} 
+                setBalanceLimit={setBalanceLimit} 
+                setRegionLimit={setRegionLimit} 
+                setWarnings={setWarnings} 
+                allAccounts={allAccounts}
+                />
+            </AuthzProvider>
+            <AuthzProvider opaClient={gSDK} defaultPath={useAuthz?"policy/ui/check":"policy/ui/always"} retry={3} batch={true}>
+              <AccountList 
+                title="Global Accounts" 
+                svc={gSvc} 
+                regions={gRegions} 
+                setError={setError} 
+                setBalanceLimit={setBalanceLimit} 
+                setRegionLimit={setRegionLimit} 
+                setWarnings={setWarnings} 
+                allAccounts={allAccounts}
+                />
+            </AuthzProvider>
         </div>
       </div>
     </div>

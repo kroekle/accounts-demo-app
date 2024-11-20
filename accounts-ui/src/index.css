@@ -91,3 +91,7 @@ h2 {
 .MuiFormControl-root {
   margin: .5rem !important;
 }
+
+.Justify-end {
+  justify-items: flex-end;
+}

@@ -30,3 +30,9 @@ variable "application_host" {
   sensitive = false
   default   = "accounts.norsebank.com"
 }
+
+variable "create_local_files" {
+  type      = bool
+  sensitive = false
+  default   = false
+}

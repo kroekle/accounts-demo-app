@@ -23,7 +23,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
-  "proxy": "this is in setupProxy.js",
+  "proxy": "http://this is in setupProxy.js",
   "scripts": {
     "watch": "onchange 'src/**/*.{js,jsx,css,scss}' -- npm run build",
     "start": "react-scripts start",

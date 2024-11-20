@@ -302,6 +302,7 @@ module "accounts-ui" {
   secret_name      = "none"
 }
 
+
 resource "kubernetes_manifest" "gateway" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
@@ -327,4 +328,58 @@ resource "kubernetes_manifest" "gateway" {
       ]
     }
   }
+}
+
+resource "local_file" "us_config" {
+  count = var.create_local_files ? 1 : 0
+
+  content = <<-EOT
+      discovery:
+        name: discovery
+        prefix: /systems/${module.us_system.system_id}
+        service: styra
+      labels:
+        system-id: ${module.us_system.system_id}
+        system-type: "template.istio:1.0"
+      services:
+      - credentials:
+          bearer:
+            token: ${module.us_system.system_opa_token}
+        name: styra
+        url: ${var.server_url}/v1
+      - credentials:
+          bearer:
+            token: ${module.us_system.system_opa_token}
+        name: styra-bundles
+        url: ${var.server_url}/v1/bundles
+    EOT
+  
+  filename = "${path.module}/us-opa-config.yaml"
+}
+
+resource "local_file" "global_config" {
+  count = var.create_local_files ? 1 : 0
+
+  content = <<-EOT
+      discovery:
+        name: discovery
+        prefix: /systems/${module.global_system.system_id}
+        service: styra
+      labels:
+        system-id: ${module.global_system.system_id}
+        system-type: "template.istio:1.0"
+      services:
+      - credentials:
+          bearer:
+            token: ${module.global_system.system_opa_token}
+        name: styra
+        url: ${var.server_url}/v1
+      - credentials:
+          bearer:
+            token: ${module.global_system.system_opa_token}
+        name: styra-bundles
+        url: ${var.server_url}/v1/bundles
+    EOT
+  
+  filename = "${path.module}/global-opa-config.yaml"
 }

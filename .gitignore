@@ -9,3 +9,5 @@ terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
 terraform/terraform.tfvars
 terraform/.terraform.lock.hcl
+terraform/us-opa-config.yaml
+terraform/global-opa-config.yaml
