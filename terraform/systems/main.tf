@@ -117,37 +117,41 @@ resource "styra_policy" "authz_policy" {
   modules = {
     "authz.rego" = <<-EOT
       package system.authz
+      import rego.v1
 
       # Deny access by default.
       default allow = false
 
       # Allow access to application data.
-      allow {
+      allow if {
         input.path = ["v1", "data", "application", "main"]
         input.method = "POST"
       }
 
       # Allow access to application ui checks.
-      allow {
-        input.path = ["v1", "data", "policy", "ui", "check"]
+      ui_rules := ["check","always"]
+      allow if {
+        input.path = ["v1", "data", "policy", "ui",rule]
         input.method = "POST"
+        rule in ui_rules
       }
-      allow {
-        input.path = ["v1", "batch","data", "policy", "ui", "check"]
+      allow if {
+        input.path = ["v1", "batch","data", "policy", "ui", rule]
         input.method = "POST"
+        rule in ui_rules
       }
 
       # This is only used for health check in liveness and readiness probe
-      allow {
+      allow if {
         input.path = ["health"]
         input.method = "GET"
       }
 
       # This is only used for prometheus metrics
-      allow {
+      allow if {
         input.path = ["metrics"]
         input.method = "GET"
-      }    
+      } 
     EOT
   }
 }
