@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 
 @RestController
-@RequestMapping("/v1/gaccounts")
+@RequestMapping("/v1/g/accounts")
 public class GlobalAccountsRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalAccountsRestController.class);

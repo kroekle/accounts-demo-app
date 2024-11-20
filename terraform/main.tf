@@ -265,7 +265,7 @@ module "us_accounts" {
   kube_context     = var.kube_context
   eopa_license_key = var.eopa_license_key
   secret_name      = module.us_system.secret_name
-  path             = "/v1/accounts"
+  path             = "/v1/u/accounts"
   opa_path         = "/usopa"
 }
 
@@ -284,7 +284,7 @@ module "global_accounts" {
   kube_context     = var.kube_context
   eopa_license_key = var.eopa_license_key
   secret_name      = module.global_system.secret_name
-  path             = "/v1/gaccounts"
+  path             = "/v1/g/accounts"
   opa_path         = "/gopa"
 }
 

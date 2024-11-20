@@ -30,7 +30,7 @@ import jakarta.servlet.http.HttpServletRequest;
 // import springfox.documentation.spring.web.plugins.Docket;
 
 @RestController
-@RequestMapping("/v1/accounts")
+@RequestMapping("/v1/u/accounts")
 public class UsAccountsRestController {
 
     private static final Logger logger = LoggerFactory.getLogger(UsAccountsRestController.class);

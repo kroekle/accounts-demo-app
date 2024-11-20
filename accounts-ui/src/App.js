@@ -53,8 +53,8 @@ function App() {
   // }, [useAuthz])
 
   useEffect(() => {
-    setUsSvc(new Services("/v1/accounts", token))
-    setGSvc(new Services("/v1/gaccounts", token))
+    setUsSvc(new Services("/v1/u/accounts", token))
+    setGSvc(new Services("/v1/g/accounts", token))
   }, [token])
 
   useEffect(() => {

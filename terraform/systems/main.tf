@@ -62,7 +62,7 @@ resource "styra_policy" "ingress_policy" {
 
         # allow if {
         #   input.attributes.request.http.method == "DELETE"
-        #   input.parsed_path = ["v1", _, account_id]
+        #   input.parsed_path = ["v1", _, "accounts", account_id]
         #   "global:admin" in claims.roles
         # }
 
