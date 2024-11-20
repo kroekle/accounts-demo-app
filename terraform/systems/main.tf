@@ -60,11 +60,21 @@ resource "styra_policy" "ingress_policy" {
           input.parsed_path = ["v1", "batch", "data","policy","ui",_]
         }
 
+        # Example path based rule (will be enforced in both UI and API)
         # allow if {
         #   input.attributes.request.http.method == "DELETE"
         #   input.parsed_path = ["v1", _, "accounts", account_id]
         #   "global:admin" in claims.roles
         # }
+
+        # Example data filtering rules (backend service uses to do SQL conditions)
+        # headers["x-max-balance"] := "2000000" if {
+        #   claims.sub == "5002"
+        # }
+
+        # headers["x-blocked-regions"] := "WEST" if {
+        #   claims.sub == "5002"
+        # }        
 
         claims := payload if {
           io.jwt.verify_hs256(bearer_token, "super-secret")
