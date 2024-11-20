@@ -34,13 +34,7 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
           }
           setError(resp.body)
         }
-        // let queryString = selectedRegion==='x'?'':`?region=${selectedRegion}`;
-        // fetch(url + queryString, {
-        //   "method": "GET",
-        //   "headers": {
-        //     "authorization": `Bearer ${token}`
-        //   }
-        // })
+
         if (svc) {
           let call = svc.listAll(selectedRegion)
           fetch(call.path, call.options)
@@ -58,10 +52,6 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
-    // Avoid a layout jump when reaching the last page with empty rows.
-    // const emptyRows =
-    //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
     const handleChangePage = (event, newPage) => {
       setPage(newPage);
@@ -137,7 +127,6 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
                   }}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
-                //   ActionsComponent={TablePaginationActions}
                 />
               </TableRow>
             </TableFooter>

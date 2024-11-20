@@ -197,7 +197,6 @@ resource "kubernetes_manifest" "opa_ext_authz" {
   }
 }
 
-
 resource "styra_stack" "accounts_stack" {
   name                     = "Norsebank All Accounts"
   description              = ""

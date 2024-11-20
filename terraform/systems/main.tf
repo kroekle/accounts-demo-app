@@ -44,6 +44,42 @@ resource "styra_policy" "notifications_policy" {
 }
 */
 
+resource "styra_policy" "ingress_policy" {
+  policy                     = "systems/${styra_system.system.id}/policy/ingress"
+  modules = {
+    "rules.rego" = <<-EOT
+        package policy.ingress
+        import rego.v1
+
+        # Add policy/rules to allow or deny ingress traffic
+
+        default allow = true
+        #allow check requests directly to OPA sidecar
+        allow if {
+          input.attributes.request.http.method == "POST"
+          input.parsed_path = ["v1", "batch", "data","policy","ui",_]
+        }
+
+        # allow if {
+        #   input.attributes.request.http.method == "DELETE"
+        #   input.parsed_path = ["v1", _, account_id]
+        #   "global:admin" in claims.roles
+        # }
+
+        claims := payload if {
+          io.jwt.verify_hs256(bearer_token, "super-secret")
+          [_, payload, _] := io.jwt.decode(bearer_token)
+        }
+
+        bearer_token := t if {
+          v := input.attributes.request.http.headers.authorization
+          startswith(v, "Bearer ")
+          t := substring(v, count("Bearer "), -1)
+        }    
+    EOT
+  }
+}
+
 resource "styra_policy" "mask_policy" {
   policy                     = "systems/${styra_system.system.id}/system/log"
   modules = {
