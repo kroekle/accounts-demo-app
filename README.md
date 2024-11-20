@@ -25,6 +25,12 @@ minikube start --cpus=4 --memory=8192 --addons=istio,istio-provisioner
 kubectl get pods -n istio-system
 ```
 
+### 4. Install Gateway CRDs
+This is one way to install the CRDs, the [k8s site](https://gateway-api.sigs.k8s.io/guides/#getting-started-with-gateway-api) has other methods as well
+```bash
+kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v1.2.0" | kubectl apply -f -
+```
+
 ## Setup Instructions
 
 ### 1. Clone the Repository
