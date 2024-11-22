@@ -8,20 +8,26 @@ const users = [
       "id": "alice",
       "name": "Alice Doe",
       "initials": "AD",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidXNpbmVzc0NhdGVnb3J5IjoiaGVscGRlc2siLCJjb21wYW55Ijoic3R5cmEiLCJkZXBhcnRtZW50TnVtYmVyIjoiY2MiLCJlbXBsb3llZU51bWJlciI6IjEwIiwiZW1wbG95ZWVUeXBlIjoicGFydHRpbWUiLCJnaWROdW1iZXIiOiI1MDAyIiwicm9sZXMiOlsiZ2xvYmFsOndyaXRlciIsImdsb2JhbDphZG1pbiIsImdsb2JhbDpyZXZpZXdlciIsInVzOnJlYWRlciJdLCJwaHlzaWNhbERlbGl2ZXJ5T2ZmaWNlTmFtZSI6IkVBU1QiLCJ0aXRsZSI6Im1hbmFnZXIiLCJzdWIiOiI1MDAyIn0.EGPC_EctMPbyNwhieAKRiXLiVnPcnj9Pq_G-Yo0Esyc"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidXNpbmVzc0NhdGVnb3J5IjoicHJpdmF0ZUJhbmtpbmciLCJjb21wYW55Ijoibm9yc2ViYW5rIiwiZGVwYXJ0bWVudCI6IndlYWx0aE1hbmFnZW1lbnQiLCJlbXBsb3llZU51bWJlciI6IjEiLCJuYW1lIjoiQWxpY2UgRG9lIiwicm9sZXMiOlsiaW50ZXJuYXRpb25hbDp0cmFuc2ZlcnMiLCJpbnRlcm5hdGlvbmFsOmFkbWluIiwidXM6dHJhbnNmZXJzIiwidXM6YWRtaW4iXSwidGl0bGUiOiJHbG9iYWwgTWFuYWdlciIsInN1YiI6IjUwMDEifQ.E1j9r-EoNO627Pk5HfTfHLvlWSRzqZxL8isWjiRxpqk"
     },
     {
       "id": "kurt",
       "name": "Kurt Doe",
       "initials": "KD",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidXNpbmVzc0NhdGVnb3J5Ijoic2FsZXMiLCJjb21wYW55Ijoic3R5cmEiLCJkZXBhcnRtZW50TnVtYmVyIjoic2EiLCJlbXBsb3llZU51bWJlciI6IjQzIiwiZW1wbG95ZWVUeXBlIjoiZnVsbHRpbWUiLCJnaWROdW1iZXIiOiI1MDAxIiwicm9sZXMiOlsiZ2xvYmFsOmFkbWluIiwidXM6YWRtaW4iXSwicGh5c2ljYWxEZWxpdmVyeU9mZmljZU5hbWUiOiJ3aXNjb25zaW4iLCJwb3N0YWxBZGRyZXNzIjoiVVMiLCJ0aXRsZSI6ImFkbWluIiwic3ViIjoiNTAwMSJ9.uao0sY8ejWipUnVT-v24o_bcY4812zrwpBX28Wj1r8s"  
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidXNpbmVzc0NhdGVnb3J5IjoicHJpdmF0ZUJhbmtpbmciLCJjb21wYW55Ijoibm9yc2ViYW5rIiwiZGVwYXJ0bWVudCI6IndlYWx0aE1hbmFnZW1lbnQiLCJlbXBsb3llZU51bWJlciI6IjIiLCJuYW1lIjoiS3VydCBEb2UiLCJyb2xlcyI6WyJpbnRlcm5hdGlvbmFsOnZpZXdlciIsInVzOnRyYW5zZmVycyJdLCJ0aXRsZSI6IlVTIEZ1bmRzIE1hbmFnZXIiLCJzdWIiOiI1MDAyIn0.tiNN2NGxdPNxZJ1hcSu1wO_mMSJyND6Q8T0b4BuqcIo"  
     
     },
     {
       "id": "tim",
       "name": "Tim Doe",
       "initials": "TD",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidXNpbmVzc0NhdGVnb3J5IjoibGVhZGVyc2hpcCIsImNvbXBhbnkiOiJzdHlyYSIsImRlcGFydG1lbnROdW1iZXIiOiJlbmdpbmVlcmluZyIsImVtcGxveWVlTnVtYmVyIjoiMSIsImVtcGxveWVlVHlwZSI6ImZ1bGx0aW1lIiwiZ2lkTnVtYmVyIjoiNTAwMyIsInJvbGVzIjpbImdsb2JhbDp2aWV3ZXIiLCJ1czp3cml0ZXIiLCJ1czpyZXZpZXdlciJdLCJwaHlzaWNhbERlbGl2ZXJ5T2ZmaWNlTmFtZSI6ImNhbGlmb3JuaWEiLCJwb3N0YWxBZGRyZXNzIjoiVVMiLCJ0aXRsZSI6IkNUTyIsInN1YiI6IjUwMDMifQ.ns2gQks0TQtz_1RH3QCm4FhL4jwCYlSxveN5RXUG6tU"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidXNpbmVzc0NhdGVnb3J5IjoicHJpdmF0ZUJhbmtpbmciLCJjb21wYW55Ijoibm9yc2ViYW5rIiwiZGVwYXJ0bWVudCI6IndlYWx0aE1hbmFnZW1lbnQiLCJlbXBsb3llZU51bWJlciI6IjMiLCJuYW1lIjoiVGltIERvZSIsInJvbGVzIjpbImdsb2JhbDp2aWV3ZXIiLCJ1czphZG1pbiJdLCJ0aXRsZSI6IlVTIEFjY291bnQgU3VwZXJ2aXNvciIsInN1YiI6IjUwMDMifQ.tywbqbCE3D7N0Cyg32hcLI8gzkCiU-IUe-IcarAbm5U"
+    },
+    {
+      "id": "sue",
+      "name": "Sue Doe",
+      "initials": "SD",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidXNpbmVzc0NhdGVnb3J5IjoicHJpdmF0ZUJhbmtpbmciLCJjb21wYW55Ijoibm9yc2ViYW5rIiwiZGVwYXJ0bWVudCI6ImN1c3RvbWVyU2VydmljZSIsImVtcGxveWVlTnVtYmVyIjoiNCIsIm5hbWUiOiJTdWUgRG9lIiwicm9sZXMiOlsiaW50ZXJuYXRpb25hbDp2aWV3ZXIiLCJ1czp2aWV3ZXIiXSwidGl0bGUiOiJHbG9iYWwgU3VwcG9ydCBTcGVjaWFsaXN0Iiwic3ViIjoiNTAwNCJ9.nl9spo7UcETOYb3qPb3jNH8UnUPfOddJ7-PXhWTHoZs"
     }
   ]
 

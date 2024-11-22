@@ -80,6 +80,7 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
                 <TableCell>Manager</TableCell>
                 <TableCell>Balance</TableCell>
                 <TableCell>Region</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -93,6 +94,7 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
                   <TableCell>{item.manager.name}</TableCell>
                   <TableCell className="right">{item.balance.toLocaleString()}</TableCell>
                   <TableCell className="center">{item.manager.region}</TableCell>
+                  <TableCell className="center">{item.status}</TableCell>
                   <TableCell className="center">
                   {item.status === "ACTIVE" && (
                     <Authz input={svc.closeAccount(item.id)} fromResult={result => result.allowed}>
