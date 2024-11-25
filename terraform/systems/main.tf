@@ -57,6 +57,10 @@ resource "styra_policy" "ingress_policy" {
         #allow check requests directly to OPA sidecar
         allow if {
           input.attributes.request.http.method == "POST"
+          input.parsed_path = ["v1", "data","policy","ui",_]
+        }
+        allow if {
+          input.attributes.request.http.method == "POST"
           input.parsed_path = ["v1", "batch", "data","policy","ui",_]
         }
 
