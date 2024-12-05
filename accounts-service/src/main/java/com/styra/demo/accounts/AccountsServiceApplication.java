@@ -23,10 +23,10 @@ public class AccountsServiceApplication {
 		boolean useUsController = Boolean.parseBoolean(System.getenv().getOrDefault("US_CONTROLLER", "true"));
 		if (useUsController) {
 		  logger.info("Using US Accounts Rest Controller");
-		  app = new SpringApplication(AccountsServiceApplication.class, UsAccountsRestController.class);
+		  app = new SpringApplication(AccountsServiceApplication.class, OpenApiConfig.class, UsAccountsRestController.class);
 		} else {
 		  logger.info("Using Global Accounts Rest Controller");
-		  app = new SpringApplication(AccountsServiceApplication.class, GlobalAccountsRestController.class);
+		  app = new SpringApplication(AccountsServiceApplication.class, OpenApiConfig.class, GlobalAccountsRestController.class);
 		}
 		// SpringApplication app = new SpringApplication(AccountsServiceApplication.class, UsAccountsRestController.class);
 

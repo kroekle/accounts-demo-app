@@ -47,13 +47,10 @@ resource "styra_policy" "notifications_policy" {
 resource "styra_policy" "ingress_policy" {
   policy                     = "systems/${styra_system.system.id}/policy/ingress"
   modules = {
-    "rules.rego" = <<-EOT
+    "opa.rego" = <<-EOT
         package policy.ingress
         import rego.v1
 
-        # Add policy/rules to allow or deny ingress traffic
-
-        default allow = true
         #allow check requests directly to OPA sidecar
         allow if {
           input.attributes.request.http.method == "POST"
@@ -63,6 +60,15 @@ resource "styra_policy" "ingress_policy" {
           input.attributes.request.http.method == "POST"
           input.parsed_path = ["v1", "batch", "data","policy","ui",_]
         }
+      EOT
+    "rules.rego" = <<-EOT
+        package policy.ingress
+        import rego.v1
+
+        # Add policy/rules to allow or deny ingress traffic
+ 
+        default allow = true
+ 
 
         # Example path based rule (will be enforced in both UI and API)
         # allow if {

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.styra.demo.accounts.mappers.AccountsMapper;
-import com.styra.demo.accounts.mappers.ManagerMapper;
 import com.styra.demo.accounts.model.Account;
-import com.styra.demo.accounts.model.Manager;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
 // import io.swagger.v3.oas.annotations.Operation;
@@ -28,8 +27,6 @@ import jakarta.servlet.http.HttpServletRequest;
 // import springfox.documentation.builders.RequestHandlerSelectors;
 // import springfox.documentation.spi.DocumentationType;
 // import springfox.documentation.spring.web.plugins.Docket;
-
-
 
 @RestController
 @RequestMapping("/v1/g/accounts")
@@ -56,15 +53,14 @@ public class GlobalAccountsRestController {
         // }
     
     
-        @Autowired
         GlobalAccountsRestController(AccountsMapper accountsMapper) {
             this.accountsMapper = accountsMapper;
     }
-
     
     @GetMapping
-    // @Operation(summary = "Get Accounts", description = "Get US based accounts by region")
-    // @Tag(name = "US", description = "US Regional API")
+    @Operation(summary = "Get Accounts", description = "Get Global based accounts by region")
+    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "global", description = "Global API")
     List<Account> getAccountsByRegion(
         @RequestParam(name = "region", required = false) String region,
         @RequestHeader(name = "x-max-balance", required = false) Long maxBalance,
@@ -74,27 +70,35 @@ public class GlobalAccountsRestController {
     }
 
     @GetMapping("/{id}")
-    // @Tag(name = "US", description = "US Regional API")
+    @Operation(summary = "Get Account", description = "Get Global based accounts by region")
+    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "global", description = "Global API")
     Account getAccount(@PathVariable("id") String id) {
         return accountsMapper.findById(id);
     }
 
     @DeleteMapping("/{id}")
-    // @Tag(name = "US", description = "US Regional API")
+    @Operation(summary = "Inactivate Accounts", description = "Get Global based accounts by region")
+    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "global", description = "Global API")
     void closeAccount(@PathVariable("id") String id)  {
         logger.info("Closing account: %v", id);
         accountsMapper.closeAccount(id);
     }
 
     @PatchMapping("/{id}")
-    // @Tag(name = "US", description = "US Regional API")
+    @Operation(summary = "Re-activate Accounts", description = "Get Global based accounts by region")
+    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "global", description = "Global API")
     void reactivateAccount(@PathVariable("id") String id)  {
         logger.info("Reactivating account: %v", id);
         accountsMapper.reactivateAccount(id);
     }
 
     @PostMapping("/txfr/{fromId}/{toId}/{amount}")
-    // @Tag(name = "US", description = "US Regional API")
+    @Operation(summary = "Transfer Funds")
+    @Tag(name = "transfer", description = "Transfers API")
+    @Tag(name = "global", description = "Global API")
     void transferFunds(@PathVariable("fromId") String from, @PathVariable("toId") String to,
             @PathVariable("amount") long amount, HttpServletRequest request)  {
         logger.info("Transferring %v from %v to %v", amount, from, to);
