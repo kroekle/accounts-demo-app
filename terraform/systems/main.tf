@@ -110,23 +110,46 @@ resource "styra_policy" "ingress_policy" {
   policy                     = "systems/${styra_system.system.id}/policy/ingress"
   modules = {
     "opa.rego" = <<-EOT
-        package policy.ingress
-        import rego.v1
+      package policy.ingress
+      import rego.v1
 
-        #allow check requests directly to OPA sidecar
-        allow if {
-          input.attributes.request.http.method == "POST"
-          input.parsed_path = ["v1", "data","policy","ui",_]
-        }
-        allow if {
-          input.attributes.request.http.method == "POST"
-          input.parsed_path = ["v1", "batch", "data","policy","ui",_]
-        }
-        allow if {
-          input.attributes.request.http.method == "GET"
-          input.parsed_path = ["v3", "api-docs"]
-        }
-      EOT
+      #allow check requests directly to OPA sidecar
+      allow if {
+        input.attributes.request.http.method == "POST"
+        input.parsed_path = ["v1", "data","policy","ui",_]
+      }
+      allow if {
+        input.attributes.request.http.method == "POST"
+        input.parsed_path = ["v1", "batch", "data","policy","ui",_]
+      }
+
+      #not really an opa rule, but...
+      allow if {
+        input.attributes.request.http.method == "GET"
+        input.parsed_path = ["v3", "api-docs"]
+      }
+
+      #these are to be able to switch on authz type
+
+      #RBAC will be the default if no others are set
+      RBAC if {
+        not ABAC
+        not PBAC
+        not ReBAC
+      }
+
+      ABAC if {
+        input.attributes.request.http.headers["authz-type"] == "ABAC"
+      }
+
+      ReBAC if {
+        input.attributes.request.http.headers["authz-type"] == "ReBAC"
+      }
+
+      PBAC if {
+        input.attributes.request.http.headers["authz-type"] == "PBAC"
+      }
+    EOT
     "rules.rego" = <<-EOT
         package policy.ingress
         import rego.v1
@@ -168,6 +191,7 @@ resource "styra_policy" "ingress_policy" {
       import rego.v1
 
       allow if {
+        RBAC # this is only needed because the demo can switch between types
         api_roles := data.openapi[input.attributes.request.http.method][glob_path].roles
         glob.match(glob_path, ["/"], input.attributes.request.http.path)
         claims.roles[_] in api_roles
