@@ -18,6 +18,7 @@ import com.styra.demo.accounts.mappers.AccountsMapper;
 import com.styra.demo.accounts.model.Account;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -60,6 +61,7 @@ public class UsAccountsRestController {
 
     
     @GetMapping
+    @SecurityRequirement(name = "role", scopes = {"us:admin", "us:viewer", "us:transfers"})
     @Operation(summary = "Get Accounts", description = "Get US based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
@@ -72,6 +74,7 @@ public class UsAccountsRestController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "role", scopes = {"us:admin", "us:viewer", "us:transfers"})
     @Operation(summary = "Get Account")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
@@ -80,6 +83,7 @@ public class UsAccountsRestController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "role", scopes = "us:admin")
     @Operation(summary = "Inactivate account")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
@@ -89,6 +93,7 @@ public class UsAccountsRestController {
     }
 
     @PatchMapping("/{id}")
+    @SecurityRequirement(name = "role", scopes = "us:admin")
     @Operation(summary = "Re-activate account")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
@@ -98,6 +103,7 @@ public class UsAccountsRestController {
     }
 
     @PostMapping("/txfr/{fromId}/{toId}/{amount}")
+    @SecurityRequirement(name = "role", scopes = "us:transfers")
     @Operation(summary = "Inactivate account")
     @Tag(name = "transfer", description = "Transfers API")
     @Tag(name = "us", description = "US Regional API")

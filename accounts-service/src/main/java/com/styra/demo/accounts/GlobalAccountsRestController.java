@@ -18,6 +18,7 @@ import com.styra.demo.accounts.mappers.AccountsMapper;
 import com.styra.demo.accounts.model.Account;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -58,6 +59,7 @@ public class GlobalAccountsRestController {
     }
     
     @GetMapping
+    @SecurityRequirement(name = "role", scopes = {"global:admin", "global:viewer", "global:transfers"})
     @Operation(summary = "Get Accounts", description = "Get Global based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "global", description = "Global API")
@@ -70,6 +72,7 @@ public class GlobalAccountsRestController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "role", scopes = {"global:admin", "global:viewer", "global:transfers"})
     @Operation(summary = "Get Account", description = "Get Global based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "global", description = "Global API")
@@ -78,6 +81,7 @@ public class GlobalAccountsRestController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "role", scopes = {"global:admin"})
     @Operation(summary = "Inactivate Accounts", description = "Get Global based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "global", description = "Global API")
@@ -87,6 +91,7 @@ public class GlobalAccountsRestController {
     }
 
     @PatchMapping("/{id}")
+    @SecurityRequirement(name = "role", scopes = {"global:admin"})
     @Operation(summary = "Re-activate Accounts", description = "Get Global based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "global", description = "Global API")
@@ -96,6 +101,7 @@ public class GlobalAccountsRestController {
     }
 
     @PostMapping("/txfr/{fromId}/{toId}/{amount}")
+    @SecurityRequirement(name = "role", scopes = {"global:transfers"})
     @Operation(summary = "Transfer Funds")
     @Tag(name = "transfer", description = "Transfers API")
     @Tag(name = "global", description = "Global API")
