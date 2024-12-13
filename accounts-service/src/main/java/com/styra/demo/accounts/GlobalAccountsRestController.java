@@ -60,9 +60,9 @@ public class GlobalAccountsRestController {
     
     @GetMapping
     @SecurityRequirement(name = "role", scopes = {"international:admin", "international:viewer", "international:transfers"})
-    @Operation(summary = "Get Accounts", description = "Get Global based accounts by region")
+    @Operation(summary = "Get Accounts", description = "Get International based accounts by region")
     @Tag(name = "account", description = "Accounts API")
-    @Tag(name = "global", description = "Global API")
+    @Tag(name = "international", description = "International API")
     List<Account> getAccountsByRegion(
         @RequestParam(name = "region", required = false) String region,
         @RequestHeader(name = "x-max-balance", required = false) Long maxBalance,
@@ -73,18 +73,18 @@ public class GlobalAccountsRestController {
 
     @GetMapping("/{id}")
     @SecurityRequirement(name = "role", scopes = {"international:admin", "international:viewer", "international:transfers"})
-    @Operation(summary = "Get Account", description = "Get Global based accounts by region")
+    @Operation(summary = "Get Account", description = "Get International based accounts by region")
     @Tag(name = "account", description = "Accounts API")
-    @Tag(name = "global", description = "Global API")
+    @Tag(name = "international", description = "International API")
     Account getAccount(@PathVariable("id") String id) {
         return accountsMapper.findById(id);
     }
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "role", scopes = {"international:admin"})
-    @Operation(summary = "Inactivate Accounts", description = "Get Global based accounts by region")
+    @Operation(summary = "Inactivate Accounts", description = "Get International based accounts by region")
     @Tag(name = "account", description = "Accounts API")
-    @Tag(name = "global", description = "Global API")
+    @Tag(name = "international", description = "International API")
     void closeAccount(@PathVariable("id") String id)  {
         logger.info("Closing account: %v", id);
         accountsMapper.closeAccount(id);
@@ -92,9 +92,9 @@ public class GlobalAccountsRestController {
 
     @PatchMapping("/{id}")
     @SecurityRequirement(name = "role", scopes = {"international:admin"})
-    @Operation(summary = "Re-activate Accounts", description = "Get Global based accounts by region")
+    @Operation(summary = "Re-activate Accounts", description = "Get International based accounts by region")
     @Tag(name = "account", description = "Accounts API")
-    @Tag(name = "global", description = "Global API")
+    @Tag(name = "international", description = "International API")
     void reactivateAccount(@PathVariable("id") String id)  {
         logger.info("Reactivating account: %v", id);
         accountsMapper.reactivateAccount(id);
@@ -104,7 +104,7 @@ public class GlobalAccountsRestController {
     @SecurityRequirement(name = "role", scopes = {"international:transfers"})
     @Operation(summary = "Transfer Funds")
     @Tag(name = "transfer", description = "Transfers API")
-    @Tag(name = "global", description = "Global API")
+    @Tag(name = "international", description = "International API")
     void transferFunds(@PathVariable("fromId") String from, @PathVariable("toId") String to,
             @PathVariable("amount") long amount, HttpServletRequest request)  {
         logger.info("Transferring %v from %v to %v", amount, from, to);
