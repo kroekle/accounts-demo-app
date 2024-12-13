@@ -22,12 +22,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
-// import io.swagger.v3.oas.annotations.Operation;
-// import io.swagger.v3.oas.annotations.tags.Tag;
-// import springfox.documentation.builders.PathSelectors;
-// import springfox.documentation.builders.RequestHandlerSelectors;
-// import springfox.documentation.spi.DocumentationType;
-// import springfox.documentation.spring.web.plugins.Docket;
+
 
 @RestController
 
@@ -44,17 +39,7 @@ public class UsAccountsRestController {
         // private UsAccounts accounts;
         // private String opaUrl = System.getenv("US_OPA_URL") == null ? "https://demo-opa-us-rmnuhnvfyq-uc.a.run.app"
         //         : System.getenv("US_OPA_URL");
-    
-        // @Bean
-        // public Docket api() {
-        //     return new Docket(DocumentationType.SWAGGER_2)
-        //             .select()
-        //             .apis(RequestHandlerSelectors.any())
-        //             .paths(PathSelectors.any())
-        //             .build();
-        // }
-    
-    
+        
         UsAccountsRestController(AccountsMapper accountsMapper) {
             this.accountsMapper = accountsMapper;
     }
@@ -63,7 +48,7 @@ public class UsAccountsRestController {
     @GetMapping
     @SecurityRequirement(name = "role", scopes = {"us:admin", "us:viewer", "us:transfers"})
     @Operation(summary = "Get Accounts", description = "Get US based accounts by region")
-    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
     List<Account> getAccountsByRegion(
         @RequestParam(name = "region", required = false) String region,
@@ -76,7 +61,7 @@ public class UsAccountsRestController {
     @GetMapping("/{id}")
     @SecurityRequirement(name = "role", scopes = {"us:admin", "us:viewer", "us:transfers"})
     @Operation(summary = "Get Account")
-    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
     Account getAccount(@PathVariable("id") String id) {
         return accountsMapper.findById(id);
@@ -85,7 +70,7 @@ public class UsAccountsRestController {
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "role", scopes = "us:admin")
     @Operation(summary = "Inactivate account")
-    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
     void closeAccount(@PathVariable("id") String id)  {
         logger.info("Closing account: %v", id);
@@ -95,7 +80,7 @@ public class UsAccountsRestController {
     @PatchMapping("/{id}")
     @SecurityRequirement(name = "role", scopes = "us:admin")
     @Operation(summary = "Re-activate account")
-    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
     void reactivateAccount(@PathVariable("id") String id)  {
         logger.info("Reactivating account: %v", id);
@@ -106,7 +91,7 @@ public class UsAccountsRestController {
     @SecurityRequirement(name = "role", scopes = "us:transfers")
     @Operation(summary = "Inactivate account")
     @Tag(name = "transfer", description = "Transfers API")
-    @Tag(name = "account", description = "Accounts API")
+    @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
     void transferFunds(@PathVariable("fromId") String from, @PathVariable("toId") String to,
             @PathVariable("amount") long amount, HttpServletRequest request)  {
