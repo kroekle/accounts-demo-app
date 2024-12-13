@@ -382,3 +382,15 @@ resource "local_file" "global_config" {
   
   filename = "${path.module}/global-opa-config.yaml"
 }
+
+module "data_sources" {
+  source = "./datasources"
+
+  kube_config       = var.kube_config
+  kube_context      = var.kube_context
+  namespace         = kubernetes_namespace.accounts.metadata[0].name
+  bearer_token      = var.bearer_token
+  server_url        = var.server_url
+  us_system_id      = module.us_system.system_id
+  global_system_id  = module.global_system.system_id
+}

@@ -11,3 +11,12 @@ output "stack_id" {
   value = styra_stack.accounts_stack.id
 }
 
+/*
+output "us_status" {
+  value = module.data_sources.us_datasource_status
+}
+
+output "global_status" {
+  value = module.data_sources.global_datasource_status
+}
+*/

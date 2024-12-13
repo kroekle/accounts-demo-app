@@ -44,6 +44,68 @@ resource "styra_policy" "notifications_policy" {
 }
 */
 
+resource "styra_policy" "transform_policy" {
+  policy                     = "systems/${styra_system.system.id}/transform/openapi"
+  modules = {
+    "openapi.rego" = <<-EOT
+      package transform.openapi
+
+      method_with_resources[upper(method)] := r {
+        
+        methods[method]
+        r := {replace_path_templates_with_globs(r).path:{"tags":tags,"roles":roles} | tags := get_tags(input.paths[r][m]); m == method; roles := get_roles(input.paths[r][m])}
+      }
+
+      methods[m] {
+        input.paths[_][m]
+      }
+
+      get_tags(entry) = {x |
+            x := entry.tags[_]
+      }
+
+      # openapi supports different roles for different authentication schemes: OAuth and OpenId
+      # Here we just union them all, since our input schema does not tell us what scheme to use.
+      # In all likelihood they are the same roles, since the authentication scheme should not
+      # be changing the required roles anyway.  Of course, your mileage may vary.
+      # https://swagger.io/docs/specification/authentication/
+      # null roles denotes the roles list is missing, implying a public API
+      get_roles(entry) = {x |
+            some authn
+              x := entry.security[_][authn][_]
+      }
+
+      # replace_path_templates_with_globs rewrites openapi path templates to globs
+      # e.g., /shelves/{shelf}/books/{book} to /shelves/*/books/*
+      # and returns a map with position indices mapping to variable names
+      # e.g., {1: shelf, 3: book} for above
+      replace_path_templates_with_globs(path) = {"path": rewritten_path, "variables": vars} {
+        segments := split(path, "/")
+        rewritten_segments := [rewritten |
+          original := segments[_]
+          rewritten := replace_segment_with_globs(original).segment
+        ]
+
+        vars := {position: var_name |
+          original := segments[position]
+          var_name := replace_segment_with_globs(original).variable
+        }
+
+        rewritten_path := concat("/", rewritten_segments)
+      }
+
+      replace_segment_with_globs(segment) = {"segment": rewritten_segment, "variable": variable} {
+        startswith(segment, "{")
+        endswith(segment, "}")
+        rewritten_segment := "*"
+        variable := trim_prefix(trim_suffix(segment, "}"), "{")
+      } else = {"segment": segment} {
+        true
+      }
+    EOT
+  }
+}
+
 resource "styra_policy" "ingress_policy" {
   policy                     = "systems/${styra_system.system.id}/policy/ingress"
   modules = {
@@ -60,6 +122,10 @@ resource "styra_policy" "ingress_policy" {
           input.attributes.request.http.method == "POST"
           input.parsed_path = ["v1", "batch", "data","policy","ui",_]
         }
+        allow if {
+          input.attributes.request.http.method == "GET"
+          input.parsed_path = ["v3", "api-docs"]
+        }
       EOT
     "rules.rego" = <<-EOT
         package policy.ingress
@@ -67,7 +133,7 @@ resource "styra_policy" "ingress_policy" {
 
         # Add policy/rules to allow or deny ingress traffic
  
-        default allow = true
+        default allow = false
  
 
         # Example path based rule (will be enforced in both UI and API)
@@ -95,7 +161,17 @@ resource "styra_policy" "ingress_policy" {
           v := input.attributes.request.http.headers.authorization
           startswith(v, "Bearer ")
           t := substring(v, count("Bearer "), -1)
-        }    
+        }
+    EOT
+    "rbac_openapi.rego" = <<-EOT
+      package policy.ingress
+      import rego.v1
+
+      allow if {
+        api_roles := data.openapi[input.attributes.request.http.method][glob_path].roles
+        glob.match(glob_path, ["/"], input.attributes.request.http.path)
+        claims.roles[_] in api_roles
+      }
     EOT
   }
 }
