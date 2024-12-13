@@ -104,6 +104,7 @@ public class GlobalAccountsRestController {
     @SecurityRequirement(name = "role", scopes = {"international:transfers"})
     @Operation(summary = "Transfer Funds")
     @Tag(name = "transfer", description = "Transfers API")
+    @Tag(name = "account", description = "Accounts API")
     @Tag(name = "international", description = "International API")
     void transferFunds(@PathVariable("fromId") String from, @PathVariable("toId") String to,
             @PathVariable("amount") long amount, HttpServletRequest request)  {

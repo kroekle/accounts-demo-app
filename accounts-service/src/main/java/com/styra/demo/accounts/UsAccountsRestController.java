@@ -106,6 +106,7 @@ public class UsAccountsRestController {
     @SecurityRequirement(name = "role", scopes = "us:transfers")
     @Operation(summary = "Inactivate account")
     @Tag(name = "transfer", description = "Transfers API")
+    @Tag(name = "account", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
     void transferFunds(@PathVariable("fromId") String from, @PathVariable("toId") String to,
             @PathVariable("amount") long amount, HttpServletRequest request)  {
