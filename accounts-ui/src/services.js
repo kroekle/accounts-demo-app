@@ -1,4 +1,4 @@
-function Services(baseUrl, token) {
+function Services(baseUrl, token, authz) {
     this.baseUrl = baseUrl;
     this.token = token;
 
@@ -10,7 +10,8 @@ function Services(baseUrl, token) {
             "options": {
                 "method": "GET",
                 "headers": {
-                  "authorization": `Bearer ${token}`
+                  "authorization": `Bearer ${token}`,
+                  "authz-type": authz
                 }
             }
         }
@@ -22,7 +23,8 @@ function Services(baseUrl, token) {
             "options": {
                 "method": "DELETE",
                 "headers": {
-                  "authorization": `Bearer ${token}`
+                  "authorization": `Bearer ${token}`,
+                  "authz-type": authz
                 }
             }
         }
@@ -34,7 +36,8 @@ function Services(baseUrl, token) {
             "options": {
                 "method": "PATCH",
                 "headers": {
-                  "authorization": `Bearer ${token}`
+                  "authorization": `Bearer ${token}`,
+                  "authz-type": authz
                 }
             }
         }
@@ -46,7 +49,8 @@ function Services(baseUrl, token) {
             "options": {
                 "method": "POST",
                 "headers": {
-                  "authorization": `Bearer ${token}`
+                  "authorization": `Bearer ${token}`,
+                  "authz-type": authz
                 }
             }
         }

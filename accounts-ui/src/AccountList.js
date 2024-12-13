@@ -115,7 +115,7 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[5, 10, { label: 'All', value: -1 }]}
-                  colSpan={5}
+                  colSpan={6}
                   count={(accounts && accounts.length)?accounts.length:0}
                   rowsPerPage={rowsPerPage}
                   page={page}

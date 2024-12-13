@@ -11,6 +11,9 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 const usRegions = [['x','All Regions'], ['EAST', "East"], ['WEST', "West"], ['NORTH', "North"], ['SOUTH', 'South']];
 const gRegions = [['x','All Regions'], ['ASIA', 'Asia'], ['AFRICA','Africa'], ['AUSTRALIA','Australia'], ['EUROPE','Europe'], ['NA','North America (non US)'], ['SA','South America'], ['','']];
@@ -20,6 +23,25 @@ u.pathname = "usopa";
 const usSDK = new OPAClient(u.toString());
 u.pathname = "gopa";
 const gSDK = new OPAClient(u.toString());
+
+const marks = [
+  {
+    value: 0,
+    label: 'RBAC',
+  },
+  {
+    value: 10,
+    label: 'ABAC',
+  },
+  {
+    value: 20,
+    label: 'ReBAC',
+  },
+  {
+    value: 30,
+    label: 'PBAC',
+  },
+];
 
 function App() {
   const [token, setToken] = useState();
@@ -33,6 +55,7 @@ function App() {
   const [useAuthz, setUseAuthz] = useState(true);
   const [useBatch, setUseBatch] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [authz, setAuthz] = useState(0);
 
   const menuOpen = Boolean(anchorEl);
   
@@ -55,9 +78,10 @@ function App() {
   }, [usSvc, gSvc])
 
   useEffect(() => {
-    setUsSvc(new Services("/v1/u/accounts", token))
-    setGSvc(new Services("/v1/g/accounts", token))
-  }, [token])
+    const label = marks.find(m => m.value === authz).label;
+    setUsSvc(new Services("/v1/u/accounts", token, label))
+    setGSvc(new Services("/v1/g/accounts", token, label))
+  }, [token, authz])
 
   useEffect(() => {
     if (error) {
@@ -88,8 +112,39 @@ function App() {
   }, [warnings])
 
 
+  const theme = createTheme({
+    palette: {
+      background: {
+        paper: '#fff',
+      },
+      divider: '#e0e0e0',
+      primary: {
+        main: '#1976d2',
+      },
+    },
+    components: {
+      MuiSelect: {
+        styleOverrides: {
+          root: {
+            borderRadius: '8px',
+            backgroundColor: '#fff', // or use theme.palette.background.paper
+            '& .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              border: 'none',
+            },
+          },
+        },
+      },
+    },
+  });
+
   return (
-    <div>
+    <ThemeProvider theme={theme}>
       <div className="Header">
         <div className="Logo">
           <div>
@@ -153,7 +208,30 @@ function App() {
             </AuthzProvider>
         </div>
       </div>
-    </div>
+      <div className="Footer"> 
+        <div className="flex">
+          <div className="ml2">
+            <Typography id="discrete-slider-custom" gutterBottom>
+              Authorization Model
+            </Typography>
+            <Slider
+              value={authz}
+              onChange={(event, newValue) => setAuthz(newValue)}
+              getAriaValueText={(value) => `${value}`}
+              aria-labelledby="discrete-slider-custom"
+              step={null}
+              valueLabelDisplay="off"
+              min={0}
+              max={30}
+              marks={marks}
+            />
+          </div>
+          {/* <div className="ml2">
+            <h2>Powered by Styra DAS</h2>
+          </div> */}
+        </div>
+      </div>
+    </ThemeProvider>
   );
 }
 
