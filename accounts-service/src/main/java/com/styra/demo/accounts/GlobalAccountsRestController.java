@@ -59,7 +59,7 @@ public class GlobalAccountsRestController {
     }
     
     @GetMapping
-    @SecurityRequirement(name = "role", scopes = {"global:admin", "global:viewer", "global:transfers"})
+    @SecurityRequirement(name = "role", scopes = {"international:admin", "international:viewer", "international:transfers"})
     @Operation(summary = "Get Accounts", description = "Get Global based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "global", description = "Global API")
@@ -72,7 +72,7 @@ public class GlobalAccountsRestController {
     }
 
     @GetMapping("/{id}")
-    @SecurityRequirement(name = "role", scopes = {"global:admin", "global:viewer", "global:transfers"})
+    @SecurityRequirement(name = "role", scopes = {"international:admin", "international:viewer", "international:transfers"})
     @Operation(summary = "Get Account", description = "Get Global based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "global", description = "Global API")
@@ -81,7 +81,7 @@ public class GlobalAccountsRestController {
     }
 
     @DeleteMapping("/{id}")
-    @SecurityRequirement(name = "role", scopes = {"global:admin"})
+    @SecurityRequirement(name = "role", scopes = {"international:admin"})
     @Operation(summary = "Inactivate Accounts", description = "Get Global based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "global", description = "Global API")
@@ -91,7 +91,7 @@ public class GlobalAccountsRestController {
     }
 
     @PatchMapping("/{id}")
-    @SecurityRequirement(name = "role", scopes = {"global:admin"})
+    @SecurityRequirement(name = "role", scopes = {"international:admin"})
     @Operation(summary = "Re-activate Accounts", description = "Get Global based accounts by region")
     @Tag(name = "account", description = "Accounts API")
     @Tag(name = "global", description = "Global API")
@@ -101,7 +101,7 @@ public class GlobalAccountsRestController {
     }
 
     @PostMapping("/txfr/{fromId}/{toId}/{amount}")
-    @SecurityRequirement(name = "role", scopes = {"global:transfers"})
+    @SecurityRequirement(name = "role", scopes = {"international:transfers"})
     @Operation(summary = "Transfer Funds")
     @Tag(name = "transfer", description = "Transfers API")
     @Tag(name = "global", description = "Global API")
