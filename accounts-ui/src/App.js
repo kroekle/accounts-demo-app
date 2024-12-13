@@ -78,7 +78,7 @@ function App() {
   }, [usSvc, gSvc])
 
   useEffect(() => {
-    if (token && authz) {
+    if (token) {
       const label = marks.find(m => m.value === authz).label;
       setUsSvc(new Services("/v1/u/accounts", token, label))
       setGSvc(new Services("/v1/g/accounts", token, label))
