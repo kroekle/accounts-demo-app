@@ -44,7 +44,7 @@ resource "styra_policy" "notifications_policy" {
 }
 */
 
-resource "styra_policy" "transform_policy" {
+resource "styra_policy" "openapi_transform_policy" {
   policy                     = "systems/${styra_system.system.id}/transform/openapi"
   modules = {
     "openapi.rego" = <<-EOT
@@ -106,6 +106,49 @@ resource "styra_policy" "transform_policy" {
   }
 }
 
+resource "styra_policy" "accounts_transform_policy" {
+  policy                     = "systems/${styra_system.system.id}/transform/accounts"
+  modules = {
+    "accounts.rego" = <<-EOT
+      package transform.accounts
+      import rego.v1
+
+      main[account] := {"region": region, "manager": manager} if {
+        account := input[i].id
+        region := input[i].region
+        manager := input[i].manager.id
+      }    
+
+      main["graph"] contains [manager,"owns",account] if {
+        account := input[idx].id
+        manager := input[idx].manager.id
+      }
+
+      # all of our users should have view access
+      viewers := ["1","2","4","5"]  # you would normally want to get this from data
+      main["graph"] contains [viewer,"views",account] if {
+        viewer := viewers[_]
+        account := input[_].id
+      }
+
+      us_transfer_users := ["1", "2"]
+      us_regions := ["EAST","WEST","NORTH","SOUTH"]
+      main["graph"] contains [viewer,"txfr",account] if {
+        viewer := us_transfer_users[_]
+        input[x].region in us_regions
+        account := input[x].id
+      }
+
+      global_transfer_users := ["1", "5"]
+      main["graph"] contains [viewer,"txfr",account] if {
+        viewer := global_transfer_users[_]
+        not input[x].region in us_regions
+        account := input[x].id
+      }
+    EOT
+  }
+}
+
 resource "styra_policy" "ingress_policy" {
   policy                     = "systems/${styra_system.system.id}/policy/ingress"
   modules = {
@@ -121,6 +164,13 @@ resource "styra_policy" "ingress_policy" {
       allow if {
         input.attributes.request.http.method == "POST"
         input.parsed_path = ["v1", "batch", "data","policy","ui",_]
+      }
+
+      # this is allowing DAS to call into the service, this should acourse be changed to a real idenity
+      allow if {
+        input.attributes.request.http.headers.authorization == "Bearer apitoken"
+        input.attributes.request.http.method == "GET"
+        input.parsed_path = ["v1", _, "accounts"]
       }
 
       #not really an opa rule, but...
@@ -186,7 +236,7 @@ resource "styra_policy" "ingress_policy" {
           t := substring(v, count("Bearer "), -1)
         }
     EOT
-    "rbac_openapi.rego" = <<-EOT
+    "rbac.rego" = <<-EOT
       package policy.ingress
       import rego.v1
 
@@ -197,7 +247,7 @@ resource "styra_policy" "ingress_policy" {
         claims.roles[_] in api_roles
       }
     EOT
-    "abac_openapi.rego" = <<-EOT
+    "abac.rego" = <<-EOT
         package policy.ingress
         import rego.v1
 
@@ -219,7 +269,15 @@ resource "styra_policy" "ingress_policy" {
           ABAC # this is only needed because the demo can switch between types
           dept_and_territory_match
           input.attributes.request.http.method in ["PATCH", "DELETE"]  # close/reactive account
-          claims.level > 3
+          claims.level > 3  # above level 3 can work cross region
+        }
+
+        allow if {
+          ABAC # this is only needed because the demo can switch between types
+          dept_and_territory_match
+          input.attributes.request.http.method in ["PATCH", "DELETE"]  # close/reactive account
+          input.parsed_path = ["v1", _, "accounts", account_id]
+          data.accounts[account_id].region in claims.homeRegions # need to be in region to close/reactive accounts (unless > level 3)
         }
 
         department_match if {
@@ -240,6 +298,65 @@ resource "styra_policy" "ingress_policy" {
           "transfer" in data.openapi[input.attributes.request.http.method][glob_path].tags
           glob.match(glob_path, ["/"], split(input.attributes.request.http.path, "?")[0])
         }
+    EOT
+    "rebac.rego" = <<-EOT
+      package policy.ingress
+      import rego.v1
+
+      # this would likely be pulled from a different source
+      backups contains ["1", "backsup", "2"]
+      backups contains ["1", "backsup", "5"]
+      backups contains ["2", "backsup", "1"]
+      backups contains ["2", "backsup", "4"]
+
+      working_account := account if {
+        input.parsed_path = ["v1", _, "accounts", account]
+      }
+
+      working_account := account if {
+        input.parsed_path = ["v1", _, "accounts","txfr", account, _, _]
+      }
+
+      employee_id := claims.employeeNumber
+
+      allow if {
+        ReBAC
+        input.attributes.request.http.method == "GET"
+        input.parsed_path = ["v1", _, "accounts"]
+        viewable_accounts := [a| data.accounts.graph[_] = [employee_id,"views",a]]
+        count(viewable_accounts) > 0
+      }
+
+      allow if {
+        ReBAC
+        input.attributes.request.http.method == "GET"
+        data.accounts.graph[_] = [employee_id,"views",working_account]
+      }
+
+      allow if {
+        ReBAC
+        input.attributes.request.http.method in ["DELETE", "PATCH"]
+        data.accounts.graph[_] = [employee_id,"owns",working_account]
+      }
+      allow if {
+        ReBAC
+        input.attributes.request.http.method in ["DELETE", "PATCH"]
+        backups[[employee_id,"backsup",other_employee]]
+        data.accounts.graph[_] = [other_employee,"owns",working_account]
+      }
+
+      allow if {
+        ReBAC
+        input.attributes.request.http.method in ["POST"]
+        data.accounts.graph[_] = [employee_id,"txfr",working_account]
+      }
+
+      allow if {
+        ReBAC
+        input.attributes.request.http.method in ["POST"]
+        backups[[employee_id,"backsup",other_employee]]
+        data.accounts.graph[_] = [other_employee,"txfr",working_account]
+      }
     EOT
   }
 }

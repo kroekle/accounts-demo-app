@@ -30,6 +30,7 @@ resource "kubernetes_deployment" "deployment" {
           name  = var.name
           image = var.image
           image_pull_policy = "Always"
+
           dynamic "env" {
               for_each = var.env_vars
               content {

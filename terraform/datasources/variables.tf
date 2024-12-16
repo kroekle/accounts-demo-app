@@ -31,3 +31,7 @@ variable "global_system_id" {
   type      = string
   sensitive = false
 }
+
+variable "datasources_depends_on" {
+  type      = any
+}

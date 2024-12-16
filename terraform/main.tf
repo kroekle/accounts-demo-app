@@ -393,4 +393,5 @@ module "data_sources" {
   server_url        = var.server_url
   us_system_id      = module.us_system.system_id
   global_system_id  = module.global_system.system_id
+  datasources_depends_on = [module.us_accounts.service_status]
 }
