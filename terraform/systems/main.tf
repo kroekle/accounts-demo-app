@@ -193,9 +193,53 @@ resource "styra_policy" "ingress_policy" {
       allow if {
         RBAC # this is only needed because the demo can switch between types
         api_roles := data.openapi[input.attributes.request.http.method][glob_path].roles
-        glob.match(glob_path, ["/"], input.attributes.request.http.path)
+        glob.match(glob_path, ["/"], split(input.attributes.request.http.path, "?")[0])
         claims.roles[_] in api_roles
       }
+    EOT
+    "abac_openapi.rego" = <<-EOT
+        package policy.ingress
+        import rego.v1
+
+        allow if {
+          ABAC # this is only needed because the demo can switch between types
+          department_match
+          input.attributes.request.http.method == "GET" # viewing account
+          claims.level > 0
+        }
+
+        allow if {
+          ABAC # this is only needed because the demo can switch between types
+          dept_and_territory_match
+          account_transfers
+          claims.level > 2
+        }
+
+        allow if {
+          ABAC # this is only needed because the demo can switch between types
+          dept_and_territory_match
+          input.attributes.request.http.method in ["PATCH", "DELETE"]  # close/reactive account
+          claims.level > 3
+        }
+
+        department_match if {
+          tags := data.openapi[input.attributes.request.http.method][glob_path].tags
+          glob.match(glob_path, ["/"], split(input.attributes.request.http.path, "?")[0])
+          claims.department in tags
+        }
+
+        dept_and_territory_match if {
+          tags := data.openapi[input.attributes.request.http.method][glob_path].tags
+          glob.match(glob_path, ["/"], split(input.attributes.request.http.path, "?")[0])
+          claims.territories[_] in tags
+          claims.department in tags
+        }
+
+        account_transfers if {
+          input.attributes.request.http.method == "POST"
+          "transfer" in data.openapi[input.attributes.request.http.method][glob_path].tags
+          glob.match(glob_path, ["/"], split(input.attributes.request.http.path, "?")[0])
+        }
     EOT
   }
 }
