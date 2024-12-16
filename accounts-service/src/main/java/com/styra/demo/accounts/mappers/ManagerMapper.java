@@ -17,7 +17,6 @@ public interface ManagerMapper {
         value = {
         @Result(property = "id", column = "manager_id"),
         @Result(property = "name", column = "name"),
-        @Result(property = "region", column = "region")
     })
     Manager findById(@Param("id") String id);
 }

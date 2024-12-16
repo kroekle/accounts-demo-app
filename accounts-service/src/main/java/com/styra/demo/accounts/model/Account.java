@@ -13,6 +13,10 @@ public class Account {
         ACTIVE, INACTIVE
     }
 
+    public enum Region {
+        WEST, NORTH, SOUTH, EAST, ASIA, AFRICA, AUSTRALIA, EUROPE, NA, SA
+    }
+
     @JsonProperty
     private String id;
     @JsonProperty
@@ -23,4 +27,6 @@ public class Account {
     private Manager manager;
     @JsonProperty
     private Status status;
+    @JsonProperty
+    private Region region;
 }

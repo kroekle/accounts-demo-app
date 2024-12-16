@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.ResultMap;
-import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
@@ -20,13 +19,13 @@ public interface AccountsMapper {
 
     @Select("SELECT account_id, holder_name, balance, account_status, m.manager_id, name, region FROM account JOIN manager m using (manager_id) WHERE account_id = #{id}")
     @Results(id = "accountResult", value = {
-            @Result(property = "id", column = "account_id"),
-            @Result(property = "holderName", column = "holder_name"),
-            @Result(property = "balance", column = "balance"),
-            @Result(property = "status", column = "account_status"),
-            @Result(property = "manager.id", column = "manager_id"),
-            @Result(property = "manager.name", column = "name"),
-            @Result(property = "manager.region", column = "region"),
+        @Result(property = "id", column = "account_id"),
+        @Result(property = "holderName", column = "holder_name"),
+        @Result(property = "balance", column = "balance"),
+        @Result(property = "status", column = "account_status"),
+        @Result(property = "manager.id", column = "manager_id"),
+        @Result(property = "manager.name", column = "name"),
+        @Result(property = "region", column = "region")
     })
     Account findById(@Param("id") String id);
 
