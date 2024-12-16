@@ -93,7 +93,7 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
                   <TableCell>{item.holderName}</TableCell>
                   <TableCell>{item.manager.name}</TableCell>
                   <TableCell className="right">{item.balance.toLocaleString()}</TableCell>
-                  <TableCell className="center">{item.manager.region}</TableCell>
+                  <TableCell className="center">{item.region}</TableCell>
                   <TableCell className="center">{item.status}</TableCell>
                   <TableCell className="center">
                   {item.status === "ACTIVE" && (
@@ -253,7 +253,7 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
       if (allAccounts && allAccounts.length > 0) {
 
         setOptions(allAccounts.map(a => {
-            return {"id":a.id, "name":`${a.holderName} (${a.manager.region})`}
+            return {"id":a.id, "name":`${a.holderName} (${a.region})`}
         }
         ).sort((a,b) => a.name.localeCompare(b.name))
         .filter(a =>  a.id.localeCompare(accountId) !== 0)
