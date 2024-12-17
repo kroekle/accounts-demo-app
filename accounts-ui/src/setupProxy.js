@@ -42,5 +42,11 @@ module.exports = function(app) {
       // },
     })
   );
+  app.use('/attributes',
+    createProxyMiddleware({
+      target: 'http://localhost:80',
+      changeOrigin: true,
+    })
+  );
 
 };

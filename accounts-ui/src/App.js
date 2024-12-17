@@ -14,6 +14,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Slider from '@mui/material/Slider';
 import Typography from '@mui/material/Typography';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import StateServices from './state';
+import { use } from 'react';
 
 const usRegions = [['x','All Regions'], ['EAST', "East"], ['WEST', "West"], ['NORTH', "North"], ['SOUTH', 'South']];
 const gRegions = [['x','All Regions'], ['ASIA', 'Asia'], ['AFRICA','Africa'], ['AUSTRALIA','Australia'], ['EUROPE','Europe'], ['NA','North America (non US)'], ['SA','South America'], ['','']];
@@ -23,6 +27,7 @@ u.pathname = "usopa";
 const usSDK = new OPAClient(u.toString());
 u.pathname = "gopa";
 const gSDK = new OPAClient(u.toString());
+const stateServices = new StateServices();
 
 const marks = [
   {
@@ -56,9 +61,21 @@ function App() {
   const [useBatch, setUseBatch] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const [authz, setAuthz] = useState(0);
-
+  const [officeHours, setOfficeHours] = useState(true);
+  const [swipedIn, setSwipedIn] = useState(true);
+  const [refreshAuthz, setRefreshAuthz] = useState(false);
   const menuOpen = Boolean(anchorEl);
-  
+
+  useEffect(() => {
+    stateServices.setAttribute("officeHours", officeHours);
+    setRefreshAuthz((a) => !a);
+  }, [officeHours]);
+
+  useEffect(() => {
+    stateServices.setAttribute("swipedIn", swipedIn);
+    setRefreshAuthz((a) => !a);
+  }, [swipedIn]);
+
   useEffect(() => {
 
     const doIt = async () =>{
@@ -83,7 +100,7 @@ function App() {
       setUsSvc(new Services("/v1/u/accounts", token, label))
       setGSvc(new Services("/v1/g/accounts", token, label))
     }
-  }, [token, authz])
+  }, [token, authz, refreshAuthz])
 
   useEffect(() => {
     if (error) {
@@ -228,7 +245,32 @@ function App() {
               marks={marks}
             />
           </div>
-          {/* <div className="ml2">
+          {authz === 30 && (
+            <div className="ml2 footer-switch">
+  
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={officeHours}
+                  onChange={(event) => setOfficeHours(event.target.checked)}
+                  inputProps={{ 'aria-label': 'During Office Hours' }}
+                />}
+            label="Durning Office Hours"
+            labelPlacement="end"
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={swipedIn}
+                  onChange={(event) => setSwipedIn(event.target.checked)}
+                  inputProps={{ 'aria-label': 'Swiped In' }}
+                />}
+              label="Swiped In"
+              labelPlacement="end"
+              />
+            </div>
+          )}
+          {/* <div className="ml2</div>">
             <h2>Powered by Styra DAS</h2>
           </div> */}
         </div>
