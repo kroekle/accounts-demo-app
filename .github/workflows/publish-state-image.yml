@@ -1,4 +1,4 @@
-name: Build and Publish Service Docker Image
+name: Build and Publish State Docker Image
 
 on:
   push:
