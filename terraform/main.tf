@@ -301,6 +301,19 @@ module "accounts-ui" {
   secret_name      = "none"
 }
 
+module "state-svc" {
+  source = "./services"
+
+  name             = "state-svc"
+  namespace        = kubernetes_namespace.accounts.metadata[0].name
+  image            = "ghcr.io/kroekle/accounts-demo-app/state-service:latest"
+  skip_istio       = true
+  kube_config      = var.kube_config
+  kube_context     = var.kube_context
+  eopa_license_key = var.eopa_license_key
+  path             = "/attributes"
+  secret_name      = "none"
+}
 
 resource "kubernetes_manifest" "gateway" {
   manifest = {
