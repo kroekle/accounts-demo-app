@@ -23,7 +23,7 @@ FROM scratch
 COPY --from=builder /app/main /main
 
 # Expose port 8080 to the outside world
-EXPOSE 8080
+EXPOSE 80
 
 # Command to run the executable
 ENTRYPOINT ["/main"]

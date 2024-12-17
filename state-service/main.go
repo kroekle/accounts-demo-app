@@ -25,7 +25,7 @@ func main() {
 	r.HandleFunc("/attributes/{key}", deleteAttribute).Methods("DELETE")
 	r.HandleFunc("/attributes/{key}", getAttribute).Methods("GET")
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":80", r)
 }
 
 func saveAttribute(w http.ResponseWriter, r *http.Request) {
