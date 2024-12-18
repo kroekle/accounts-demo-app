@@ -17,7 +17,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import StateServices from './state';
-import { use } from 'react';
 
 const usRegions = [['x','All Regions'], ['EAST', "East"], ['WEST', "West"], ['NORTH', "North"], ['SOUTH', 'South']];
 const gRegions = [['x','All Regions'], ['ASIA', 'Asia'], ['AFRICA','Africa'], ['AUSTRALIA','Australia'], ['EUROPE','Europe'], ['NA','North America (non US)'], ['SA','South America'], ['','']];
@@ -63,17 +62,16 @@ function App() {
   const [authz, setAuthz] = useState(0);
   const [officeHours, setOfficeHours] = useState(true);
   const [swipedIn, setSwipedIn] = useState(true);
-  const [refreshAuthz, setRefreshAuthz] = useState(false);
   const menuOpen = Boolean(anchorEl);
 
   useEffect(() => {
     stateServices.setAttribute("officeHours", officeHours);
-    setRefreshAuthz((a) => !a);
+    setToken((token) => String(token));
   }, [officeHours]);
 
   useEffect(() => {
     stateServices.setAttribute("swipedIn", swipedIn);
-    setRefreshAuthz((a) => !a);
+    setToken((token) => String(token));
   }, [swipedIn]);
 
   useEffect(() => {
@@ -100,7 +98,7 @@ function App() {
       setUsSvc(new Services("/v1/u/accounts", token, label))
       setGSvc(new Services("/v1/g/accounts", token, label))
     }
-  }, [token, authz, refreshAuthz])
+  }, [token, authz, officeHours, swipedIn])
 
   useEffect(() => {
     if (error) {
@@ -211,7 +209,6 @@ function App() {
                 setRegionLimit={setRegionLimit} 
                 setWarnings={setWarnings} 
                 allAccounts={allAccounts}
-                refreshAuthz={refreshAuthz}
                 />
             </AuthzProvider>
             <AuthzProvider opaClient={gSDK} defaultPath={useAuthz?"policy/ui/check":"policy/ui/always"} retry={3} batch={useBatch}>
@@ -224,7 +221,6 @@ function App() {
                 setRegionLimit={setRegionLimit} 
                 setWarnings={setWarnings} 
                 allAccounts={allAccounts}
-                refreshAuthz={refreshAuthz}
                 />
             </AuthzProvider>
         </div>
