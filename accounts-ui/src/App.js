@@ -211,6 +211,7 @@ function App() {
                 setRegionLimit={setRegionLimit} 
                 setWarnings={setWarnings} 
                 allAccounts={allAccounts}
+                refreshAuthz={refreshAuthz}
                 />
             </AuthzProvider>
             <AuthzProvider opaClient={gSDK} defaultPath={useAuthz?"policy/ui/check":"policy/ui/always"} retry={3} batch={useBatch}>
@@ -223,6 +224,7 @@ function App() {
                 setRegionLimit={setRegionLimit} 
                 setWarnings={setWarnings} 
                 allAccounts={allAccounts}
+                refreshAuthz={refreshAuthz}
                 />
             </AuthzProvider>
         </div>
