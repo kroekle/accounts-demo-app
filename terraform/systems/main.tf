@@ -236,7 +236,7 @@ resource "styra_policy" "ingress_policy" {
           t := substring(v, count("Bearer "), -1)
         }
     EOT
-    "rbac.rego" = <<-EOT
+    "1-rbac.rego" = <<-EOT
       package policy.ingress
       import rego.v1
 
@@ -247,7 +247,7 @@ resource "styra_policy" "ingress_policy" {
         claims.roles[_] in api_roles
       }
     EOT
-    "abac.rego" = <<-EOT
+    "2-abac.rego" = <<-EOT
         package policy.ingress
         import rego.v1
 
@@ -299,9 +299,12 @@ resource "styra_policy" "ingress_policy" {
           glob.match(glob_path, ["/"], split(input.attributes.request.http.path, "?")[0])
         }
     EOT
-    "rebac.rego" = <<-EOT
+    "3-rebac.rego" = <<-EOT
       package policy.ingress
       import rego.v1
+
+      #much of the ReBAC polices end up being in how the data model is created, in this case in the transfomrm/accounts/accounts.rego
+
 
       # this would likely be pulled from a different source
       backups contains ["1", "backsup", "2"]
@@ -356,6 +359,79 @@ resource "styra_policy" "ingress_policy" {
         input.attributes.request.http.method in ["POST"]
         backups[[employee_id,"backsup",other_employee]]
         data.accounts.graph[_] = [other_employee,"txfr",working_account]
+      }
+    EOT
+    "4-pbac.rego" = <<-EOT
+      package policy.ingress
+      import rego.v1
+
+      import data.policy.ingress.PBAC
+      import data.policy.ingress.department_match # ABAC policy
+      import data.policy.ingress.backups # ReBAC data
+
+      allow if {
+        PBAC # this is only needed because the demo can switch between types
+        input.attributes.request.http.method == "GET"
+        input.parsed_path = ["v1", _, "accounts"]
+        claims.level > 0
+        department_match
+      }
+
+      allow if {
+        PBAC # this is only needed because the demo can switch between types
+        input.attributes.request.http.method in ["DELETE", "PATCH"]
+        input.parsed_path = ["v1", _, "accounts", account_id]
+        data.accounts[account_id].manager == claims.employeeNumber
+      }
+
+      allow if {
+        PBAC # this is only needed because the demo can switch between types
+        input.attributes.request.http.method in ["DELETE", "PATCH"]
+        input.parsed_path = ["v1", _, "accounts", account_id]
+        backups[[claims.employeeNumber,"backsup",data.accounts[account_id].manager]]
+        swiped_in
+      }
+
+      allow if {
+        PBAC # this is only needed because the demo can switch between types
+        input.attributes.request.http.method in ["POST"]
+        input.parsed_path = ["v1", _, "accounts", "txfr", account_id, _, _]
+        data.accounts[account_id].manager == claims.employeeNumber
+      }
+      
+      allow if {
+        PBAC # this is only needed because the demo can switch between types
+        input.attributes.request.http.method in ["POST"]
+        backups[[employee_id,"backsup",other_employee]]
+        backups[[claims.employeeNumber,"backsup",data.accounts[account_id].manager]]
+        during_working_hours
+        claims.level > 2
+      }
+
+      during_working_hours if {
+        http.send(
+          {
+            "method": "get", 
+            "url": "http://state-svc:80/attributes/officeHours", 
+            "raise_error":false, 
+            "force_cache_duration_seconds": 1,
+            "force_cache": true,
+            "force_json_decode": true,
+            "cache": true
+            }).body.value
+      }
+
+      swiped_in if {
+        http.send(
+          {
+            "method": "get", 
+            "url": "http://state-svc:80/attributes/swipedIn", 
+            "raise_error":false, 
+            "force_cache_duration_seconds": 1,
+            "force_cache": true,
+            "force_json_decode": true,
+            "cache": true
+            }).body.value
       }
     EOT
   }
