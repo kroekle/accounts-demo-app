@@ -1,4 +1,4 @@
-function Services(baseUrl, token, authz) {
+function Services(baseUrl, token, authz, officeHours, swipedIn) {
     this.baseUrl = baseUrl;
     this.token = token;
 
@@ -11,7 +11,8 @@ function Services(baseUrl, token, authz) {
                 "method": "GET",
                 "headers": {
                   "authorization": `Bearer ${token}`,
-                  "authz-type": authz
+                  "authz-type": authz,
+                  "garbage": officeHours + swipedIn
                 }
             }
         }
@@ -24,7 +25,8 @@ function Services(baseUrl, token, authz) {
                 "method": "DELETE",
                 "headers": {
                   "authorization": `Bearer ${token}`,
-                  "authz-type": authz
+                  "authz-type": authz,
+                  "garbage": officeHours + swipedIn
                 }
             }
         }
@@ -37,7 +39,8 @@ function Services(baseUrl, token, authz) {
                 "method": "PATCH",
                 "headers": {
                   "authorization": `Bearer ${token}`,
-                  "authz-type": authz
+                  "authz-type": authz,
+                  "garbage": officeHours + swipedIn
                 }
             }
         }
@@ -50,7 +53,8 @@ function Services(baseUrl, token, authz) {
                 "method": "POST",
                 "headers": {
                   "authorization": `Bearer ${token}`,
-                  "authz-type": authz
+                  "authz-type": authz,
+                  "garbage": officeHours + swipedIn
                 }
             }
         }
