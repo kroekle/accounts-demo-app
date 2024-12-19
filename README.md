@@ -1,6 +1,8 @@
 # Norsebank Accounts Demo App
 
-This repository contains the Norsebank Accounts Demo application, which includes both backend and frontend components. The backend is written in Java and the frontend in JavaScript.
+This repository contains the Norsebank Accounts Demo application, a comprehensive showcase of Styra DAS's & (E)OPA's policy-driven security capabilities. The demo includes both backend (Java) and frontend (ReactJS) components, demonstrating how to write a single policy that can protect both frontend ReactJS code and backend APIs, reducing maintenance costs and eliminating duplicated effort.
+
+The provided policies exemplify various access control models, including Role-Based Access Control (RBAC), Attribute-Based Access Control (ABAC), Relationship-Based Access Control (ReBAC), and Policy-Based Access Control (PBAC). By exploring these policies, you can gain insights into how to effectively secure your applications with Styra DAS and OPA.
 
 ## Prerequisites
 - An existing Kubernetes cluster with Istio enabled & [Gateway CRDs](https://gateway-api.sigs.k8s.io/guides/#getting-started-with-gateway-api) installed
@@ -107,7 +109,7 @@ Each service has the same APIs defined with the only difference being the name o
    * POST /txfr/{fromId}/{toId}/{amount} - transfer funds between accounts
 
 ### Policy structure
-The DAS systems and stacks have policy/ingress policies that will authorize both API calls and UI checks with allow & deny rules.  The policy/ui rules has a predefined "check" rule for the UI to call for checking UI Authz, this rule delegates to the policy/ingress rules.
+The DAS systems and stacks have policy/ingress policies that will authorize both API calls and UI checks with allow & deny rules.  The policy/ui rules has a predefined "check" rule for the UI to call for checking UI Authz, this rule delegates to the policy/ingress rules.  Within the ingress policies there are diffent policy files for RBAC, ABAC, ReBAC, and PBAC polices.  Only one of these polices will be executed based on a header that is passed from the slider in the UI (this is not normal for polices, but helps make the demo more convinent to use).
 
 ### SQL filtering
 The application is checking two special headers that it uses for filtering sql calls.  These headers are "x-max-balance" and "x-blocked-regions".  The max balance header expects a single string represented number.  The blocked regions header will take a list of string separated by a semi-colon (;).  Each of these are optional, but if present, they will be used in the sql call when listing all accounts.
@@ -129,16 +131,113 @@ bearer_token := t if {
 
 ### Sample Rules
 
-Allow closing of accounts for Alice
-```rego
-allow if {
-  input.attributes.request.http.method == "DELETE"
-  input.parsed_path = ["v1", _, account_id]
-  claims.sub == "5002"
+Sample rules are provided mostly focused on showing/hiding the close/reactivate/transfer features:
+  *  1-RBAC
+  *  2-ABAC
+  *  3-ReBAC
+  *  4-PBAC
+
+Treat these rules as a starting point.  Add your own data and policies and see how it affects the permissions.
+
+### JWT Values
+Four identities are provided by the app (Alice Doe, Kurt Doe, Tim Doe, and Sue Doe)  the values of their JWT token are as follows:
+
+Alice Doe
+```json
+{
+  "company": "norsebank",
+  "homeRegions": [
+    "WEST",
+    "EUROPE"
+  ],
+  "territories": [
+    "us",
+    "international"
+  ],
+  "department": "accounts",
+  "level": 5,
+  "employeeNumber": "1",
+  "name": "Alice Doe",
+  "roles": [
+    "international:transfers",
+    "international:admin",
+    "us:transfers",
+    "us:admin"
+  ],
+  "title": "Global Manager",
+  "sub": "5001"
 }
 ```
 
+Kurt Doe
+```json
+{
+  "company": "norsebank",
+  "homeRegions": [
+    "NORTH"
+  ],
+  "territories": [
+    "us"
+  ],
+  "department": "accounts",
+  "level": 3,
+  "employeeNumber": "2",
+  "name": "Kurt Doe",
+  "roles": [
+    "international:viewer",
+    "us:transfers"
+  ],
+  "title": "US Funds Manager",
+  "sub": "5002"
+}
+```
 
+Tim Doe
+```json
+{
+  "businessCategory": "privateBanking",
+  "company": "norsebank",
+  "homeRegions": [
+    "EAST"
+  ],
+  "territories": [
+    "us"
+  ],
+  "department": "accounts",
+  "level": 1,
+  "employeeNumber": "4",
+  "name": "Tim Doe",
+  "roles": [
+    "international:viewer",
+    "us:admin"
+  ],
+  "title": "US Account Supervisor",
+  "sub": "5004"
+}
+```
+
+Sue Doe
+```json
+{
+  "company": "norsebank",
+  "homeRegions": [
+    "ASIA"
+  ],
+  "territories": [
+    "international"
+  ],
+  "department": "accounts",
+  "employeeNumber": "5",
+  "level": 3,
+  "name": "Sue Doe",
+  "roles": [
+    "international:viewer",
+    "us:viewer"
+  ],
+  "title": "Global Support Specialist",
+  "sub": "5005"
+}
+```
 
 ## Additional Information
 For more information, refer to the individual README files in the `accounts-service` and `accounts-ui` directories.
