@@ -1,8 +1,10 @@
 # Norsebank Accounts Demo App
 
-This repository contains the Norsebank Accounts Demo application, a comprehensive showcase of Styra DAS's & (E)OPA's policy-driven security capabilities. The demo includes both backend (Java) and frontend (ReactJS) components, demonstrating how to write a single policy that can protect both frontend ReactJS code and backend APIs, reducing maintenance costs and eliminating duplicated effort.
+This repository contains the Norsebank Accounts Demo application, a comprehensive showcase of [Styra DAS](http://styra.com)'s & (E)OPA's policy-driven security capabilities. The demo includes both backend (Java) and frontend (ReactJS) components, demonstrating how to write a single policy that can protect both frontend ReactJS code and backend APIs, reducing maintenance costs and eliminating duplicated effort.
 
 The provided policies exemplify various access control models, including Role-Based Access Control (RBAC), Attribute-Based Access Control (ABAC), Relationship-Based Access Control (ReBAC), and Policy-Based Access Control (PBAC). By exploring these policies, you can gain insights into how to effectively secure your applications with Styra DAS and OPA.
+
+The project include terraform scripts that will fully build the Systems in Styra DAS and deploy all the necessary services into a Kubernetes cluster, so that you have a fully functional demostration enviornment.
 
 ## Prerequisites
 - An existing Kubernetes cluster with Istio enabled & [Gateway CRDs](https://gateway-api.sigs.k8s.io/guides/#getting-started-with-gateway-api) installed
