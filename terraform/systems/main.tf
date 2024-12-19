@@ -166,7 +166,7 @@ resource "styra_policy" "ingress_policy" {
         input.parsed_path = ["v1", "batch", "data","policy","ui",_]
       }
 
-      # this is allowing DAS to call into the service, this should acourse be changed to a real idenity
+      # this is allowing DAS to call into the service, this should of course be changed to a real identity
       allow if {
         input.attributes.request.http.headers.authorization == "Bearer apitoken"
         input.attributes.request.http.method == "GET"
@@ -398,7 +398,7 @@ resource "styra_policy" "ingress_policy" {
         input.parsed_path = ["v1", _, "accounts", "txfr", account_id, _, _]
         data.accounts[account_id].manager == claims.employeeNumber
       }
-      
+
       allow if {
         PBAC # this is only needed because the demo can switch between types
         input.attributes.request.http.method in ["POST"]
