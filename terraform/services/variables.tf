@@ -54,3 +54,8 @@ variable "skip_istio" {
 variable "secret_name" {
   type = string
 }
+
+variable "epoa_base_image_location" {
+  type    = string
+  default = ""
+}

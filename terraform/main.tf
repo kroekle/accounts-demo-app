@@ -254,38 +254,40 @@ module "global_system" {
 module "us_accounts" {
    source = "./services"
 
-  name             = "us-accounts"
-  namespace        = kubernetes_namespace.accounts.metadata[0].name
-  image            = "ghcr.io/kroekle/accounts-demo-app/accounts-service:latest"
-  env_vars         = {
+  name                      = "us-accounts"
+  namespace                 = kubernetes_namespace.accounts.metadata[0].name
+  image                     = "${var.demo_svc_base_image_location}/accounts-service:latest"
+  env_vars  = {
    US_CONTROLLER = "true"
    PORT          = "80"
   }
-  kube_config      = var.kube_config
-  kube_context     = var.kube_context
-  eopa_license_key = var.eopa_license_key
-  secret_name      = module.us_system.secret_name
-  path             = "/v1/u/accounts"
-  opa_path         = "/usopa"
+  kube_config               = var.kube_config
+  kube_context              = var.kube_context
+  eopa_license_key          = var.eopa_license_key
+  secret_name               = module.us_system.secret_name
+  path                      = "/v1/u/accounts"
+  opa_path                  = "/usopa"
+  epoa_base_image_location  = var.epoa_base_image_location
 }
 
 module "global_accounts" {
    source = "./services"
 
-  name             = "global-accounts"
-  namespace        = kubernetes_namespace.accounts.metadata[0].name
-  image            = "ghcr.io/kroekle/accounts-demo-app/accounts-service:latest"
-  env_vars         = {
+  name                      = "global-accounts"
+  namespace                 = kubernetes_namespace.accounts.metadata[0].name
+  image                     = "${var.demo_svc_base_image_location}/accounts-service:latest"
+  env_vars = {
    US_CONTROLLER = "false"
    PORT          = "80"
    JUNK          = ""
   }
-  kube_config      = var.kube_config
-  kube_context     = var.kube_context
-  eopa_license_key = var.eopa_license_key
-  secret_name      = module.global_system.secret_name
-  path             = "/v1/g/accounts"
-  opa_path         = "/gopa"
+  kube_config               = var.kube_config
+  kube_context              = var.kube_context
+  eopa_license_key          = var.eopa_license_key
+  secret_name               = module.global_system.secret_name
+  path                      = "/v1/g/accounts"
+  opa_path                  = "/gopa"
+  epoa_base_image_location  = var.epoa_base_image_location
 }
 
 module "accounts-ui" {
@@ -293,7 +295,7 @@ module "accounts-ui" {
 
   name             = "accounts-ui"
   namespace        = kubernetes_namespace.accounts.metadata[0].name
-  image            = "ghcr.io/kroekle/accounts-demo-app/accounts-ui:latest"
+  image            = "${var.demo_svc_base_image_location}/accounts-ui:latest"
   skip_istio       = true
   kube_config      = var.kube_config
   kube_context     = var.kube_context
@@ -304,15 +306,15 @@ module "accounts-ui" {
 module "state-svc" {
   source = "./services"
 
-  name             = "state-svc"
-  namespace        = kubernetes_namespace.accounts.metadata[0].name
-  image            = "ghcr.io/kroekle/accounts-demo-app/state-service:latest"
-  skip_istio       = true
-  kube_config      = var.kube_config
-  kube_context     = var.kube_context
-  eopa_license_key = var.eopa_license_key
-  path             = "/attributes"
-  secret_name      = "none"
+  name                      = "state-svc"
+  namespace                 = kubernetes_namespace.accounts.metadata[0].name
+  image                     = "${var.demo_svc_base_image_location}/state-service:latest"
+  skip_istio                = true
+  kube_config               = var.kube_config
+  kube_context              = var.kube_context
+  eopa_license_key          = var.eopa_license_key
+  path                      = "/attributes"
+  secret_name               = "none"
 }
 
 resource "kubernetes_manifest" "gateway" {
@@ -399,12 +401,13 @@ resource "local_file" "global_config" {
 module "data_sources" {
   source = "./datasources"
 
-  kube_config       = var.kube_config
-  kube_context      = var.kube_context
-  namespace         = kubernetes_namespace.accounts.metadata[0].name
-  bearer_token      = var.bearer_token
-  server_url        = var.server_url
-  us_system_id      = module.us_system.system_id
-  global_system_id  = module.global_system.system_id
-  datasources_depends_on = [module.us_accounts.service_status]
+  kube_config                   = var.kube_config
+  kube_context                  = var.kube_context
+  namespace                     = kubernetes_namespace.accounts.metadata[0].name
+  bearer_token                  = var.bearer_token
+  server_url                    = var.server_url
+  us_system_id                  = module.us_system.system_id
+  global_system_id              = module.global_system.system_id
+  datasources_depends_on        = [module.us_accounts.service_status]
+  relay_base_image_location     = var.relay_base_image_location
 }

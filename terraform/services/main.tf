@@ -43,7 +43,7 @@ resource "kubernetes_deployment" "deployment" {
           for_each = var.skip_istio ? [] : [1]
           content {
             name  = "opa"
-            image = "ghcr.io/styrainc/enterprise-opa:latest"
+            image = "${var.epoa_base_image_location}/enterprise-opa:latest"
             image_pull_policy = "Always"
             args = [
               "run",

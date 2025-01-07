@@ -36,3 +36,18 @@ variable "create_local_files" {
   sensitive = false
   default   = false
 }
+
+variable "epoa_base_image_location" {
+  type      = string
+  default   = "ghcr.io/styrainc"
+}
+
+variable "demo_svc_base_image_location" {
+  type      = string
+  default   = "ghcr.io/kroekle/accounts-demo-app"
+}
+
+variable "relay_base_image_location" {
+  type      = string
+  default   = "styra"
+}

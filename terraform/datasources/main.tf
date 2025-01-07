@@ -43,7 +43,7 @@ resource "kubernetes_deployment" "relay_client" {
             spec {
                 container {
                     name  = "relay-client"
-                    image = "styra/relay-client:latest"
+                    image = "${var.relay_base_image_location}/relay-client:latest"
                     image_pull_policy = "Always"
                     args  = [
                         "--base-url=http:/",

@@ -35,3 +35,7 @@ variable "global_system_id" {
 variable "datasources_depends_on" {
   type      = any
 }
+
+variable "relay_base_image_location" {
+  type      = string
+}
