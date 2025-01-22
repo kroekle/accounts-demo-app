@@ -15,6 +15,65 @@ terraform {
   }
 }
 
+locals {
+  us_url            = "${var.server_url}/v1/datasources/systems/${var.us_system_id}/openapi"
+  us_request_body   = jsonencode({
+    category                = "http"
+    url                     = "http://relay-server:8080/v1/relay/apidocs/us-accounts.accounts-demo/v3/api-docs"
+    method                  = "get"
+    body                    = ""
+    polling_interval        = "1h"
+    on_premises             = false
+    skip_tls_verification   = false
+    policy_filter           = "systems/${var.us_system_id}/transform/openapi/openapi.rego"
+    policy_query            = "data.transform.openapi.method_with_resources"
+  })
+  global_url                = "${var.server_url}/v1/datasources/systems/${var.global_system_id}/openapi"
+  global_request_body       = jsonencode({
+    category                = "http"
+    url                     = "http://relay-server:8080/v1/relay/apidocs/global-accounts/v3/api-docs"
+    method                  = "get"
+    body                    = ""
+    polling_interval        = "1h"
+    on_premises             = false
+    skip_tls_verification   = false
+    policy_filter           = "systems/${var.global_system_id}/transform/openapi/openapi.rego"
+    policy_query            = "data.transform.openapi.method_with_resources"
+  })
+  us_accounts_url            = "${var.server_url}/v1/datasources/systems/${var.us_system_id}/accounts"
+  us_accounts_request_body   = jsonencode({
+    category                = "http"
+    url                     = "http://relay-server:8080/v1/relay/apidocs/us-accounts.accounts-demo/v1/u/accounts"
+    method                  = "get"
+    body                    = ""
+    headers = [{
+        name = "authorization",
+        value = "Bearer apitoken"}] 
+    polling_interval        = "24h"
+    on_premises             = false
+    skip_tls_verification   = false
+    policy_filter           = "systems/${var.us_system_id}/transform/accounts/accounts.rego"
+    policy_query            = "data.transform.accounts.main"
+  })
+  global_accounts_url                = "${var.server_url}/v1/datasources/systems/${var.global_system_id}/accounts"
+  global_accounts_request_body       = jsonencode({
+    category                = "http"
+    url                     = "http://relay-server:8080/v1/relay/apidocs/global-accounts/v1/g/accounts"
+    method                  = "get"
+    body                    = ""
+    headers = [{
+        name = "authorization",
+        value = "Bearer apitoken"}] 
+    polling_interval        = "24h"
+    on_premises             = false
+    skip_tls_verification   = false
+    policy_filter           = "systems/${var.global_system_id}/transform/accounts/accounts.rego"
+    policy_query            = "data.transform.accounts.main"
+  })
+
+}
+
+# TODO: replace bearer_token with newly created token for relay client
 resource "kubernetes_deployment" "relay_client" {
     metadata {
         name      = "relay-client"
@@ -77,18 +136,7 @@ resource "kubernetes_deployment" "relay_client" {
                         success_threshold     = 1
                         failure_threshold     = 3
                     }
-/*
-                    resources {
-                        limits {
-                            cpu    = "500m"
-                            memory = "512Mi"
-                        }
-                        requests {
-                            cpu    = "100m"
-                            memory = "128Mi"
-                        }
-                    }
-*/
+
                 }
 
                 security_context {
@@ -98,64 +146,6 @@ resource "kubernetes_deployment" "relay_client" {
             }
         }
     }
-}
-
-locals {
-  us_url            = "${var.server_url}/v1/datasources/systems/${var.us_system_id}/openapi"
-  us_request_body   = jsonencode({
-    category                = "http"
-    url                     = "http://relay-server:8080/v1/relay/apidocs/us-accounts.accounts-demo/v3/api-docs"
-    method                  = "get"
-    body                    = ""
-    polling_interval        = "1h"
-    on_premises             = false
-    skip_tls_verification   = false
-    policy_filter           = "systems/${var.us_system_id}/transform/openapi/openapi.rego"
-    policy_query            = "data.transform.openapi.method_with_resources"
-  })
-  global_url                = "${var.server_url}/v1/datasources/systems/${var.global_system_id}/openapi"
-  global_request_body       = jsonencode({
-    category                = "http"
-    url                     = "http://relay-server:8080/v1/relay/apidocs/global-accounts/v3/api-docs"
-    method                  = "get"
-    body                    = ""
-    polling_interval        = "1h"
-    on_premises             = false
-    skip_tls_verification   = false
-    policy_filter           = "systems/${var.global_system_id}/transform/openapi/openapi.rego"
-    policy_query            = "data.transform.openapi.method_with_resources"
-  })
-  us_accounts_url            = "${var.server_url}/v1/datasources/systems/${var.us_system_id}/accounts"
-  us_accounts_request_body   = jsonencode({
-    category                = "http"
-    url                     = "http://relay-server:8080/v1/relay/apidocs/us-accounts.accounts-demo/v1/u/accounts"
-    method                  = "get"
-    body                    = ""
-    headers = [{
-        name = "authorization",
-        value = "Bearer apitoken"}] 
-    polling_interval        = "24h"
-    on_premises             = false
-    skip_tls_verification   = false
-    policy_filter           = "systems/${var.us_system_id}/transform/accounts/accounts.rego"
-    policy_query            = "data.transform.accounts.main"
-  })
-  global_accounts_url                = "${var.server_url}/v1/datasources/systems/${var.global_system_id}/accounts"
-  global_accounts_request_body       = jsonencode({
-    category                = "http"
-    url                     = "http://relay-server:8080/v1/relay/apidocs/global-accounts/v1/g/accounts"
-    method                  = "get"
-    body                    = ""
-    headers = [{
-        name = "authorization",
-        value = "Bearer apitoken"}] 
-    polling_interval        = "24h"
-    on_premises             = false
-    skip_tls_verification   = false
-    policy_filter           = "systems/${var.global_system_id}/transform/accounts/accounts.rego"
-    policy_query            = "data.transform.accounts.main"
-  })
-
 }
 
 resource "null_resource" "delay" {
@@ -191,77 +181,3 @@ resource "null_resource" "global_accounts_accounts_ds" {
         command = "curl -X PUT -H 'Authorization: Bearer ${var.bearer_token}' ${local.global_accounts_url} -d '${local.global_accounts_request_body}'"
     }
 }
-
-/*
-data "http" "us_accounts_ds" {
-    url                  = "${var.server_url}/v1/datasources/systems/${var.us_system_id}/openapi"
-    request_headers = {
-        Authorization = "Bearer ${var.bearer_token}"
-    }
-    method               = "POST"
-    request_body         = jsonencode({
-        category             = "http"
-        url                  = "http://relay-server:8080/v1/relay/apidocs/us-accounts/v3/api-docs"
-        method               = "get"
-        body                 = ""
-        polling_interval     = "1h"
-        on_premises          = false
-        skip_tls_verification = false
-    })
-}
-
-data "http" "global_accounts_ds" {
-    url                  = "${var.server_url}/v1/datasources/systems/${var.global_system_id}/openapi"
-    request_headers = {
-        Authorization = "Bearer ${var.bearer_token}"
-    }
-    method               = "POST"
-    request_body         = jsonencode({
-        category             = "http"
-        url                  = "http://relay-server:8080/v1/relay/apidocs/global-accounts/v3/api-docs"
-        method               = "get"
-        body                 = ""
-        polling_interval     = "1h"
-        on_premises          = true
-        skip_tls_verification = false
-    })
-}
-*/
-
-/*
-resource "kubernetes_config_map" "datasources_agent_config" {
-    metadata {
-        name = "datasources-agent-config"
-        namespace = var.namespace
-    }
-
-    data = {
-        "conf.yaml" = <<-EOT
-            datasources:
-                systems/${var.us_system_id}/openapi:
-                systems/${var.global_system_id}/openapi:
-        EOT
-    }
-}
-*/
-
-/*
-# TODO: replace bearer_token with newly created token for data agent
-resource "kubernetes_secret" "styra_access" {
-    metadata {
-        name = "styra-access"
-        namespace = var.namespace
-    }
-
-    type = "Opaque"
-
-    data = {
-        token = var.bearer_token
-        //token = "5LZi2garJxqKYn7lFkyGo6cLLN-NB31D0f-mMV8DbpErYYF8Q67vg4wNOpMzGfv8Mq460BVxxwZsDGdH0cH3TPGfKxYe"
-    }
-}
-*/
-
-
-
-
