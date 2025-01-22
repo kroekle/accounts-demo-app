@@ -229,6 +229,22 @@ resource "styra_policy" "stack_selector" {
   }
 }
 
+resource "styra_policy" "stack_ingress" {
+  policy                     = "stacks/${styra_stack.accounts_stack.id}/policy/ingress"
+  modules = {
+    "rules.rego" = <<-EOT
+      package stacks.${styra_stack.accounts_stack.id}.policy.ingress
+      import rego.v1
+      import data.policy.ingress.claims
+
+      # 
+      # headers["x-max-balance"] := "2000000" if {
+      #   claims.sub == "5002"
+      # }
+    EOT
+  }
+}
+
 module "us_system" {
   source = "./systems"
 
@@ -249,6 +265,8 @@ module "global_system" {
   kube_context     = var.kube_context
   bearer_token     = var.bearer_token
   server_url       = var.server_url
+  install_slp      = true
+  slp_image_base   = var.relay_and_slp_base_image_location
 }
 
 module "us_accounts" {
@@ -279,7 +297,6 @@ module "global_accounts" {
   env_vars = {
    US_CONTROLLER = "false"
    PORT          = "80"
-   JUNK          = ""
   }
   kube_config               = var.kube_config
   kube_context              = var.kube_context
@@ -409,5 +426,5 @@ module "data_sources" {
   us_system_id                  = module.us_system.system_id
   global_system_id              = module.global_system.system_id
   datasources_depends_on        = [module.us_accounts.service_status]
-  relay_base_image_location     = var.relay_base_image_location
+  relay_base_image_location     = var.relay_and_slp_base_image_location
 }

@@ -47,7 +47,7 @@ variable "demo_svc_base_image_location" {
   default   = "ghcr.io/kroekle/accounts-demo-app"
 }
 
-variable "relay_base_image_location" {
+variable "relay_and_slp_base_image_location" {
   type      = string
   default   = "styra"
 }

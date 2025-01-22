@@ -59,3 +59,8 @@ variable "epoa_base_image_location" {
   type    = string
   default = ""
 }
+
+variable "eopa_version" {
+  type    = string
+  default = "latest"
+}

@@ -25,3 +25,13 @@ variable "bearer_token" {
   type      = string
   sensitive = true
 }
+
+variable "install_slp" {
+  type      = bool
+  default   = false
+}
+
+variable "slp_image_base" {
+  type      = string
+  default   = ""
+}

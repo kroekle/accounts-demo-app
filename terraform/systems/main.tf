@@ -27,7 +27,9 @@ provider "kubernetes" {
 
 locals {
   secret_name = "opa-conf-${styra_system.system.id}"
+  opa_slp_secret_name = "opa-slp-conf-${styra_system.system.id}"
   system_opa_token = regex("token:\\s*([a-zA-Z0-9-_]+)", data.http.opa_config.response_body)[0]
+  slp_svc_name = "slp-${styra_system.system.id}-svc"
 }
 
 resource "styra_system" "system" {
@@ -35,7 +37,7 @@ resource "styra_system" "system" {
   type                     = "template.istio:1.0"
 }
 
-/*
+/* #this is "working" but returning a 404
 resource "styra_policy" "notifications_policy" {
   policy                     = "metadata/${styra_system.system.id}/notifications"
   modules = {
@@ -369,6 +371,12 @@ resource "styra_policy" "ingress_policy" {
       import data.policy.ingress.department_match # ABAC policy
       import data.policy.ingress.backups # ReBAC data
 
+      # deny if {
+      #   PBAC
+      #   claims.sub == "5002"
+      #   input.attributes.request.http.method == "DELETE"
+      # }
+
       allow if {
         PBAC # this is only needed because the demo can switch between types
         input.attributes.request.http.method == "GET"
@@ -518,12 +526,13 @@ resource "styra_policy" "ui_policy" {
   modules = {
     "check.rego" = <<-EOT
       package policy.ui
+      import rego.v1
 
       import data.main.main
 
       always := {"allowed":true}
 
-      check := s {
+      check := s if {
         s := main with input as envoy_input
       }
 
@@ -595,3 +604,150 @@ resource "kubernetes_secret" "opa-conf" {
     EOT
   }
 }
+
+resource "kubernetes_secret" "opa-slp-conf" {
+  count = var.install_slp ? 1 : 0
+
+  metadata {
+    name      = local.opa_slp_secret_name
+    namespace = var.namespace
+    labels = {
+      system-type  = "istio"
+    }
+  }
+
+  type = "Opaque"
+
+  data = {
+    "config.yaml" = <<-EOT
+      discovery:
+        name: discovery
+        service: styra
+      labels:
+        system-id: ${styra_system.system.id}
+        system-type: ${styra_system.system.type}
+      services:
+      - name: styra
+        url: http://${local.slp_svc_name}:8080/v1
+    EOT
+  }
+}
+
+resource "kubernetes_service" "slp-service" {
+
+  count = var.install_slp ? 1 : 0
+
+  metadata {
+    name      = local.slp_svc_name
+    namespace = var.namespace
+  }
+
+  spec {
+    selector = {
+      app = "slp-${styra_system.system.id}"
+    }
+
+    port {
+      name        = "http"
+      port        = 8080
+      target_port = 8080
+    }
+  }
+}
+
+resource "kubernetes_stateful_set" "slp_stateful_set" {
+  count = var.install_slp ? 1 : 0
+
+  metadata {
+    name      = "slp-${styra_system.system.id}"
+    namespace = var.namespace
+  }
+
+  spec {
+    service_name = local.slp_svc_name
+    selector {
+      match_labels = {
+        app = "slp-${styra_system.system.id}"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "slp-${styra_system.system.id}"
+        }
+        annotations = {
+          "sidecar.istio.io/inject" = "false"
+        }
+      }
+      spec {
+        container {
+          name  = "slp"
+          image = "${var.slp_image_base}/styra-local-plane:latest"
+          image_pull_policy = "Always"
+          args = [
+            "--config-file=/config/slp.yaml",
+            "--addr=http://0.0.0.0:8080"
+          ]
+          env {
+            name  = "SIGSTORE_NO_CACHE"
+            value = "true"
+          }
+          port {
+            container_port = 8080
+          }
+          readiness_probe {
+            initial_delay_seconds = 10
+            period_seconds = 5
+            http_get {
+              path   = "/v1/system/ready"
+              scheme = "HTTP"
+              port   = 8000
+            }
+          }
+          liveness_probe {
+            initial_delay_seconds = 10
+            period_seconds = 10
+            http_get {
+              path   = "/v1/system/alive"
+              scheme = "HTTP"
+              port   = 8000
+            }
+          }
+          volume_mount {
+            name        = "slp-config-vol"
+            read_only   = true
+            mount_path  = "/config/slp.yaml"
+            sub_path    = "config.yaml"
+          }
+          volume_mount {
+            name        = "slp-scratch-vol"
+            mount_path  = "/scratch"
+          }
+        }
+        volume {
+          name = "slp-config-vol"
+          secret {
+            secret_name = local.secret_name
+          }
+        }
+      }
+    }
+    volume_claim_template {
+      metadata {
+        name = "slp-scratch-vol"
+        labels = {
+          slp-pvc = "slp-istio-app-pvc"
+        }
+      }
+      spec {
+        access_modes = ["ReadWriteOnce"]
+        resources {
+          requests = {
+            "storage" = "2Gi"
+          }
+        }
+      }
+    }
+  }
+}
+

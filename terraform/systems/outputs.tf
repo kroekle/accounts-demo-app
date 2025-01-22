@@ -3,7 +3,7 @@ output "system_id" {
 }
 
 output "secret_name" {
-  value = local.secret_name
+  value = var.install_slp == false ? local.secret_name : local.opa_slp_secret_name
 }
 
 output "system_opa_token" {
