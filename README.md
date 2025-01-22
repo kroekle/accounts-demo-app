@@ -61,6 +61,22 @@ Make sure to provide the required variables (these can be set in a terraform.tfv
   * eopa_license_key
   * application_host (default: accounts.norsebank.com)
 
+#### 3.a Images used
+The following images are used in this demo application:
+   * *ghcr.io/styrainc/enterprise-opa:latest* (official EOPA image)
+   * *styra/relay-client:latest* (official Styra Relay client, used for providing datasources to Styra DAS)
+   * *ghcr.io/kroekle/accounts-demo-app/accounts-ui:latest* (demo, used ReactJS frontend)
+   * *ghcr.io/kroekle/accounts-demo-app/accounts-service:latest* (demo, used for Java backend services, an environment variable is set to distinguish between US and Global)
+   * *ghcr.io/kroekle/accounts-demo-app/state-service:latest* (demo, very basic Go service that provides storeage for UI swtiches used in PBAC example) 
+
+(all the demo images are built from source in this repository)
+
+If you cannot use the images directly from the repositories that they are saved in, then you can override the base paths with the following variables:
+
+   * *epoa_base_image_location* (default: ghcr.io/styrainc)
+   * *relay_base_image_location* (default: styra)
+   * *demo_svc_base_image_location* (default: ghcr.io/kroekle/accounts-demo-app)
+   
 ### 4. Verify Deployment
 Use the following command to verify that the services are running in your Kubernetes cluster:
 ```bash
@@ -144,7 +160,7 @@ Treat these rules as a starting point.  Add your own data and policies and see h
 ### JWT Values
 Four identities are provided by the app (Alice Doe, Kurt Doe, Tim Doe, and Sue Doe)  the values of their JWT token are as follows:
 
-Alice Doe
+#### Alice Doe
 ```json
 {
   "company": "norsebank",
@@ -171,7 +187,7 @@ Alice Doe
 }
 ```
 
-Kurt Doe
+#### Kurt Doe
 ```json
 {
   "company": "norsebank",
@@ -194,7 +210,7 @@ Kurt Doe
 }
 ```
 
-Tim Doe
+#### Tim Doe
 ```json
 {
   "businessCategory": "privateBanking",
@@ -218,7 +234,7 @@ Tim Doe
 }
 ```
 
-Sue Doe
+#### Sue Doe
 ```json
 {
   "company": "norsebank",
