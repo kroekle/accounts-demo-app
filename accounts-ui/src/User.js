@@ -14,7 +14,7 @@ const users = [
       "id": "kurt",
       "name": "Kurt Doe",
       "initials": "KD",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55Ijoibm9yc2ViYW5rIiwiaG9tZVJlZ2lvbnMiOlsiTk9SVEgiXSwidGVycml0b3JpZXMiOlsidXMiXSwiZGVwYXJ0bWVudCI6ImFjY291bnRzIiwibGV2ZWwiOjMsImVtcGxveWVlTnVtYmVyIjoiMiIsIm5hbWUiOiJLdXJ0IERvZSIsInJvbGVzIjpbImludGVybmF0aW9uYWw6dmlld2VyIiwidXM6dHJhbnNmZXJzIl0sInRpdGxlIjoiVVMgRnVuZHMgTWFuYWdlciIsInN1YiI6IjUwMDIifQ.cy_dIBDREB9cVQcrWk1Jnu5xXPyOFoiqBmyI0-XTtHU"  
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55Ijoibm9yc2ViYW5rIiwiaG9tZVJlZ2lvbnMiOlsiTk9SVEgiXSwidGVycml0b3JpZXMiOlsidXMiXSwiZGVwYXJ0bWVudCI6ImFjY291bnRzIiwibGV2ZWwiOjMsImVtcGxveWVlTnVtYmVyIjoiMiIsIm5hbWUiOiJLdXJ0IERvZSIsInJvbGVzIjpbImludGVybmF0aW9uYWw6dmlld2VyIiwidXM6dHJhbnNmZXJzIiwidXM6YWRtaW4iXSwidGl0bGUiOiJVUyBGdW5kcyBNYW5hZ2VyIiwic3ViIjoiNTAwMiJ9.X1YbOI7wXpv0RidVfS1vw7vLWDb-xJC6BbE0hMpeiLU"  
     
     },
     {
