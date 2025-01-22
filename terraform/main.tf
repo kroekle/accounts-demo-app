@@ -270,7 +270,7 @@ module "global_system" {
 }
 
 module "us_accounts" {
-   source = "./services"
+  source = "./services"
 
   name                      = "us-accounts"
   namespace                 = kubernetes_namespace.accounts.metadata[0].name
@@ -289,7 +289,7 @@ module "us_accounts" {
 }
 
 module "global_accounts" {
-   source = "./services"
+  source = "./services"
 
   name                      = "global-accounts"
   namespace                 = kubernetes_namespace.accounts.metadata[0].name
