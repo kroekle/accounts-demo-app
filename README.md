@@ -203,7 +203,8 @@ Four identities are provided by the app (Alice Doe, Kurt Doe, Tim Doe, and Sue D
   "name": "Kurt Doe",
   "roles": [
     "international:viewer",
-    "us:transfers"
+    "us:transfers",
+    "us:admin"
   ],
   "title": "US Funds Manager",
   "sub": "5002"
