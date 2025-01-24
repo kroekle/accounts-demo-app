@@ -1,0 +1,15 @@
+.Desc {
+    position: absolute;
+    top: 20vh;
+    /*left: calc(50% - 400px - 75px); /* Half viewport - half body width - half element width */
+    left: 2vw;
+    width: 16vw;
+    height: 60vh;
+    /* background-color: lightgreen; */
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .DescText {
+    font-size: 0.7em;
+  }

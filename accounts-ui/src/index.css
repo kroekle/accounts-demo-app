@@ -3,9 +3,9 @@
 }
 
 #root {
-  display: block;
+  display: block; 
   width: 100%;
-}
+  }
 
 @font-face {
   font-family: Sedan;

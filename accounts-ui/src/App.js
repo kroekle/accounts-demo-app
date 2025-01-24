@@ -17,6 +17,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import StateServices from './state';
+import PolicyTypes from './PolicyTypes';
 
 const usRegions = [['x','All Regions'], ['EAST', "East"], ['WEST', "West"], ['NORTH', "North"], ['SOUTH', 'South']];
 const gRegions = [['x','All Regions'], ['ASIA', 'Asia'], ['AFRICA','Africa'], ['AUSTRALIA','Australia'], ['EUROPE','Europe'], ['NA','North America (non US)'], ['SA','South America'], ['','']];
@@ -62,6 +63,7 @@ function App() {
   const [authz, setAuthz] = useState(0);
   const [officeHours, setOfficeHours] = useState(true);
   const [swipedIn, setSwipedIn] = useState(true);
+
   const menuOpen = Boolean(anchorEl);
 
   useEffect(() => {
@@ -197,6 +199,7 @@ function App() {
         <SnackbarProvider/>
 
       </div>
+      <PolicyTypes selectedType={authz}/>
       <div className="App">
         <div className="full-width">
             <AuthzProvider opaClient={usSDK} defaultPath={useAuthz?"policy/ui/check":"policy/ui/always"} retry={3} batch={useBatch}>

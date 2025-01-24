@@ -7,9 +7,10 @@ module.exports = function(app) {
     //   changeOrigin: true,
     // })
     createProxyMiddleware({
-      target: 'http://localhost:8083',
+//      target: 'http://localhost:8083',
+      // pathRewrite: { '^/usopa': '' },
+      target: 'http://accounts.norsebank.com',
       changeOrigin: true,
-      pathRewrite: { '^/usopa': '' },
       // onProxyReq(proxyReq, req, res) {
         // console.log('**Proxied request:**');
         // console.log('  - Method:', req.method);
@@ -22,16 +23,16 @@ module.exports = function(app) {
   );
   app.use('/gopa',
     createProxyMiddleware({
-      target: 'http://localhost:8082',
-      pathRewrite: {
-        '^/gopa': ''
-      },
+//      target: 'http://localhost:8082',
+//      pathRewrite: {'^/gopa': ''},
+      target: 'http://accounts.norsebank.com',
       changeOrigin: true,
     })
   );
   app.use('/v1/',
     createProxyMiddleware({
-      target: 'http://localhost:8081',
+//      target: 'http://localhost:8081',
+      target: 'http://accounts.norsebank.com',
       changeOrigin: true,
       // onProxyReq(proxyReq, req, res) {
       //   console.log('**Proxied request:**');
@@ -44,7 +45,8 @@ module.exports = function(app) {
   );
   app.use('/attributes',
     createProxyMiddleware({
-      target: 'http://localhost:80',
+//      target: 'http://localhost:80',
+      target: 'http://accounts.norsebank.com',
       changeOrigin: true,
     })
   );
