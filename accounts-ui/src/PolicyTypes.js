@@ -54,7 +54,7 @@ function PolicyTypes ({selectedType}) {
           </AccordionSummary>
         <AccordionDetails className="DescText">
           <p>Attribute-Based Access Control (ABAC) is an authorization model that grants or denies access to resources based on a set of attributes associated with the user, the resource, and the environment.  ABAC gives the ability to have a finer level of access at the cost of having to provide sources for the attributes.  User attributes can often times be provided through claims in the JWT.</p>
-          <p>Within this application, when ABAC is in use, you will see the close action be givin to the "owner" of the account.  Allowing for a finer level of access control.</p>
+          <p>Within this application, when ABAC is in use, you will see the close action be givin to the "owner" of the account.  In addition, higher level users (Alice), based on JWT claims, can close any account in their department/territory, whereas lower level users (Kurt, Tim, Sue) can only close accounts they own. </p>
         </AccordionDetails>
       </Accordion>
       <Accordion expanded={expanded === 'RBAC'} onChange={handleChange('RBAC')}>
