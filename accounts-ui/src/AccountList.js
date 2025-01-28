@@ -322,9 +322,17 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
             <Button autoFocus onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={transferFunds} autoFocus disabled={!amount || !account}>
+            {/* <Button onClick={transferFunds} disabled={!amount || !account #TODO: would like to use useAuthz here} autoFocus>
               Continue
-            </Button>
+            </Button> */}
+            <Authz 
+              input={svc.transferFunds(accountId, account?.id || 0, amount?.replaceAll(',', '') || 0)} 
+              fromResult={result => result.allowed}
+              fallback={<Button disabled>Continue</Button>}>
+                <Button onClick={transferFunds} disabled={!amount || !account}>
+                  Continue
+                </Button>
+            </Authz>
           </DialogActions>
         </Dialog>
       </>
