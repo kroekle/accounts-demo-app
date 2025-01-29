@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { Select, MenuItem, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TableFooter, TablePagination, Link, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Autocomplete, TextField } from '@mui/material';
-import { Authz } from '@styra/opa-react';
+import { Authz, useAuthz } from '@styra/opa-react';
 import { enqueueSnackbar } from 'notistack';
 import {NumericFormat as NumberFormat} from 'react-number-format';
 
@@ -248,6 +248,16 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
     const [account, setAccount] = useState(null);
     const [options, setOptions] = useState([]);
     const [accountName, setAccountName] = useState();
+    const [canContinue, setCanContinue] = useState(false);
+
+    // useEffect(() => {
+    //   if (account && amount) {
+    //     setCanContinue(useAuthz([{
+    //       input: svc.transferFunds(accountId, account.id, amount.replaceAll(',', '')) ,
+    //       fromResult: (result) => result.allowed
+    //     }]))
+    //   }
+    // }, [account, amount, accountId, svc])
 
     useEffect(() => {
       if (allAccounts && allAccounts.length > 0) {
@@ -322,17 +332,17 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
             <Button autoFocus onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            {/* <Button onClick={transferFunds} disabled={!amount || !account #TODO: would like to use useAuthz here} autoFocus>
+            <Button onClick={transferFunds} disabled={!amount || !account || !canContinue} autoFocus>
               Continue
-            </Button> */}
-            <Authz 
+            </Button>
+            {/* <Authz 
               input={svc.transferFunds(accountId, account?.id || 0, amount?.replaceAll(',', '') || 0)} 
               fromResult={result => result.allowed}
               fallback={<Button disabled>Continue</Button>}>
                 <Button onClick={transferFunds} disabled={!amount || !account}>
                   Continue
                 </Button>
-            </Authz>
+            </Authz> */}
           </DialogActions>
         </Dialog>
       </>
