@@ -248,16 +248,11 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
     const [account, setAccount] = useState(null);
     const [options, setOptions] = useState([]);
     const [accountName, setAccountName] = useState();
-    const [canContinue, setCanContinue] = useState(false);
 
-    // useEffect(() => {
-    //   if (account && amount) {
-    //     setCanContinue(useAuthz([{
-    //       input: svc.transferFunds(accountId, account.id, amount.replaceAll(',', '')) ,
-    //       fromResult: (result) => result.allowed
-    //     }]))
-    //   }
-    // }, [account, amount, accountId, svc])
+    const [{result:canContinue}]  = useAuthz([{
+      input: svc.transferFunds(accountId, account?.id || 0, amount?.replaceAll(',', '') || '0') ,
+      fromResult: (result) => result.allowed
+    }]);
 
     useEffect(() => {
       if (allAccounts && allAccounts.length > 0) {
@@ -335,14 +330,6 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
             <Button onClick={transferFunds} disabled={!amount || !account || !canContinue} autoFocus>
               Continue
             </Button>
-            {/* <Authz 
-              input={svc.transferFunds(accountId, account?.id || 0, amount?.replaceAll(',', '') || 0)} 
-              fromResult={result => result.allowed}
-              fallback={<Button disabled>Continue</Button>}>
-                <Button onClick={transferFunds} disabled={!amount || !account}>
-                  Continue
-                </Button>
-            </Authz> */}
           </DialogActions>
         </Dialog>
       </>
