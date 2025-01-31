@@ -249,10 +249,11 @@ function AccountList({ title, svc , regions, setError, setBalanceLimit, setRegio
     const [options, setOptions] = useState([]);
     const [accountName, setAccountName] = useState();
 
-    const [{result:canContinue}]  = useAuthz([{
-      input: svc.transferFunds(accountId, account?.id || 0, amount?.replaceAll(',', '') || '0') ,
-      fromResult: (result) => result.allowed
-    }]);
+    const {result:canContinue}  = useAuthz(
+      undefined,
+      svc.transferFunds(accountId, account?.id || 0, amount?.replaceAll(',', '') || '0'),
+      (result) => result.allowed
+    );
 
     useEffect(() => {
       if (allAccounts && allAccounts.length > 0) {
