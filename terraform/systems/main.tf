@@ -221,7 +221,7 @@ resource "styra_policy" "ingress_policy" {
           amount := to_number(amount_str)
         }
 
-        subject := claims.sub
+        subject := to_number(claims.sub)
 
         # Example path based rule (will be enforced in both UI and API)
         # allow if {
