@@ -210,6 +210,18 @@ resource "styra_policy" "ingress_policy" {
  
         default allow = false
  
+        transfer if {
+          input.attributes.request.http.method == "POST"
+          input.parsed_path = ["v1", _, _, "txfr", _, _, _]
+        }
+
+        transfer_amount := amount if {
+          input.attributes.request.http.method == "POST"
+          input.parsed_path = ["v1", _, _, "txfr", _, _, amount_str]
+          amount := to_number(amount_str)
+        }
+
+        subject := claims.sub
 
         # Example path based rule (will be enforced in both UI and API)
         # allow if {
