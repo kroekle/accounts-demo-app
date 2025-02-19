@@ -45,6 +45,16 @@ variable "env_vars" {
   default = {}
 }
 
+variable "other_ports" {
+  type = list(object({
+    name = string
+    port = number
+    target_port = number
+  }))
+  sensitive = false
+  default = []
+}
+
 variable "skip_istio" {
   type = bool
   sensitive = false

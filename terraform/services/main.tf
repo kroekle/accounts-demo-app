@@ -124,6 +124,14 @@ resource "kubernetes_service" "service" {
       port        = 8181
       target_port = 8181
     }
+    dynamic "port" {
+      for_each = var.other_ports
+      content {
+        name        = port.value.name
+        port        = port.value.port
+        target_port = port.value.target_port
+      }
+    }
   }
 }
 

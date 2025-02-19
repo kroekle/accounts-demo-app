@@ -279,6 +279,13 @@ module "us_accounts" {
    US_CONTROLLER = "true"
    PORT          = "80"
   }
+  other_ports = [
+    {      
+      name        = "sql"
+      port        = 9092
+      target_port = 9092
+    }
+  ]
   kube_config               = var.kube_config
   kube_context              = var.kube_context
   eopa_license_key          = var.eopa_license_key
