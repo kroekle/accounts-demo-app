@@ -9,7 +9,6 @@ import (
 	"database/sql"
 
 	_ "github.com/jmrobles/h2go"
-	_ "github.com/lib/pq"
 )
 
 var (
