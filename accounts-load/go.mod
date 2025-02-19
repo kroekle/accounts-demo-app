@@ -1,6 +1,6 @@
 module github.com/kroekle/accounts-demo-app/accounts-load
 
-go 1.23.6
+go 1.23
 
 require github.com/jmrobles/h2go v0.5.0
 
