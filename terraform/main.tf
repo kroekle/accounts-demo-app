@@ -435,3 +435,36 @@ module "data_sources" {
   datasources_depends_on        = [module.us_accounts.service_status]
   relay_base_image_location     = var.relay_and_slp_base_image_location
 }
+
+resource "kubernetes_deployment" "load-deployment" {
+  metadata {
+    name      = "load"
+    namespace = kubernetes_namespace.accounts.metadata[0].name
+  }
+
+  spec {
+    replicas = 1
+    selector {
+      match_labels = {
+        app = "load"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "load"
+        }
+        annotations = {
+          "sidecar.istio.io/inject" = "false"
+        }
+      }
+      spec {
+        container {
+          name  = "load"
+          image = "${var.demo_svc_base_image_location}/accounts-load:latest"
+          image_pull_policy = "Always"
+        }
+      }
+    }
+  }
+}
