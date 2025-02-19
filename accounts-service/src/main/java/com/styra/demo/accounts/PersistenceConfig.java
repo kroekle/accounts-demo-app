@@ -1,8 +1,11 @@
 package com.styra.demo.accounts;
 
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.h2.tools.Server;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -17,9 +20,9 @@ public class PersistenceConfig {
     @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
-          .setType(EmbeddedDatabaseType.H2)
-          .addScript("db/migration/V1__baseline.sql")
-          .build();
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("db/migration/V1__baseline.sql")
+                .build();
     }
 
     @Bean
@@ -28,4 +31,9 @@ public class PersistenceConfig {
         factoryBean.setDataSource(dataSource());
         return factoryBean.getObject();
     }
-} 
+
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public Server h2Server() throws SQLException {
+        return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
+    }
+}
