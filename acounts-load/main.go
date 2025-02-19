@@ -188,7 +188,7 @@ func makeRequests() {
 func doRequest(client *http.Client, req *http.Request) {
 
 	if req == nil {
-		fmt.Println("No accounts available")
+		// fmt.Println("No accounts available")
 		return
 	}
 
