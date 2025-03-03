@@ -8,7 +8,7 @@ import (
 
 	"database/sql"
 
-	_ "github.com/jmrobles/h2go"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -140,7 +140,8 @@ func main() {
 }
 
 func getAccountsFromDB() (Accounts, error) {
-	db, err := sql.Open("h2", "h2://sa@us-accounts/testdb?mem=true")
+	db, err := sql.Open("postgres", "postgres://sa:sa@postgres:5432/testdb?sslmode=disable")
+
 	if err != nil {
 		return Accounts{}, fmt.Errorf("error connecting to the database: %v", err)
 	}

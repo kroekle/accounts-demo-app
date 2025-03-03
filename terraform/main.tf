@@ -245,6 +245,85 @@ resource "styra_policy" "stack_ingress" {
   }
 }
 
+resource "kubernetes_config_map" "init_sql_config" {
+  metadata {
+    name      = "init-sql-config"
+    namespace = kubernetes_namespace.accounts.metadata[0].name
+  }
+
+  data = {
+    "init.sql" = file("${path.module}/init.sql")
+  }
+}
+
+resource "kubernetes_deployment" "postgres" {
+  metadata {
+    name      = "postgres"
+    namespace = kubernetes_namespace.accounts.metadata[0].name
+  }
+
+  spec {
+    replicas = 1
+    selector {
+      match_labels = {
+        app = "postgres"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          app = "postgres"
+        }
+      }
+      spec {
+        container {
+          name  = "postgres"
+          image = "postgres:latest"
+          env {
+            name  = "POSTGRES_USER"
+            value = "sa"
+          }
+          env {
+            name  = "POSTGRES_PASSWORD"
+            value = "sa"
+          }
+          env {
+            name  = "POSTGRES_DB"
+            value = "testdb"
+          }
+          volume_mount {
+            name       = "init-sql-config"
+            mount_path = "/docker-entrypoint-initdb.d"
+          }
+        }
+        volume {
+          name = "init-sql-config"
+          config_map {
+            name = kubernetes_config_map.init_sql_config.metadata[0].name
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_service" "postgres" {
+  metadata {
+    name      = "postgres"
+    namespace = kubernetes_namespace.accounts.metadata[0].name
+  }
+
+  spec {
+    selector = {
+      app = "postgres"
+    }
+    port {
+      port        = 5432
+      target_port = 5432
+    }
+  }
+}
+
 module "us_system" {
   source = "./systems"
 
