@@ -24,6 +24,7 @@ namespace GlobalAccountsService.Models
         public string Status { get; set; } = "INACTIVE";
 
         [Column("manager_id")]
+        [JsonIgnore]
         [Required]
         public int ManagerId { get; set; }
 
