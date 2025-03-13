@@ -119,7 +119,7 @@ The application is designed to be a true demostration of application Authz polic
 ![app arch](./AppArch.png)
 
 ### APIs
-Each service has the same APIs defined with the only difference being the name of the object (v1/accounts for us, v1/gaccounts for global).  The application has the following API paths:
+Each service has the same APIs defined with the only difference being the name of the object (v1/u/accounts for us, v1/g/accounts for global).  The application has the following API paths:
    * GET / - list all accounts
    * GET /{id} - find by account id
    * DELETE /{id] - close account
