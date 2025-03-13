@@ -27,7 +27,7 @@ public interface AccountsMapper {
         @Result(property = "manager.name", column = "name"),
         @Result(property = "region", column = "region")
     })
-    Account findById(@Param("id") String id);
+    Account findById(@Param("id") int id);
 
     @SelectProvider(type = AccountsMapper.class, method = "generateSelect")
     @ResultMap("accountResult")
@@ -63,12 +63,12 @@ public interface AccountsMapper {
     }
 
     @Update("UPDATE account SET account_status = 'INACTIVE' WHERE account_id = #{id}")
-    void closeAccount(@Param("id") String id);
+    void closeAccount(@Param("id") int id);
 
     @Update("UPDATE account SET account_status = 'ACTIVE' WHERE account_id = #{id}")
-    void reactivateAccount(@Param("id") String id);
+    void reactivateAccount(@Param("id") int id);
 
     @Update("UPDATE account SET balance = balance - #{amount} WHERE account_id = #{fromAccount}; UPDATE account SET balance = balance + #{amount} WHERE account_id = #{toAccount};")
-    void transferFunds(@Param("fromAccount") String fromId, @Param("toAccount") String toId, @Param("amount") Long amount);
+    void transferFunds(@Param("fromAccount") int fromId, @Param("toAccount") int toId, @Param("amount") Long amount);
 
 }
