@@ -31,4 +31,4 @@ jobs:
           context: ./GlobalAccountsService
           file: ./GlobalAccountsService/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}/global-accounts-svc:latest
+          tags: ghcr.io/${{ github.repository }}/accounts-global-servide:latest
