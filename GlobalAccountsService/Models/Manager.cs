@@ -6,6 +6,7 @@ namespace GlobalAccountsService.Models
     [Table("manager")]
     public class Manager
     {
+        [JsonProperty("id")]
         [Key]
         [Column("manager_id")]
         [Required]
