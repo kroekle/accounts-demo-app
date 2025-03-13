@@ -1,0 +1,12 @@
+# Ignore build output directories
+bin/
+obj/
+app/build
+app/publish
+
+# Ignore user-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates

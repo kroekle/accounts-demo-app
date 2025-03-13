@@ -1,0 +1,41 @@
+# Ignore .NET build results
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore build output
+*.dll
+*.exe
+*.app
+*.log
+*.pdb
+*.cache
+*.config
+*.csproj.user
+
+# Ignore Rider project files
+.idea/
+*.sln.iml
+
+# Ignore Visual Studio Code workspace files
+.vscode/
+
+# Ignore Docker files
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+
+# Ignore node_modules
+node_modules/
+
+# Ignore other files
+*.swp
+*.tmp
+*.bak
+*.old
