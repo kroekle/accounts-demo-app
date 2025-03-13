@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace GlobalAccountsService.Models
 {
     [Table("manager")]
     public class Manager
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         [Key]
         [Column("manager_id")]
         [Required]
