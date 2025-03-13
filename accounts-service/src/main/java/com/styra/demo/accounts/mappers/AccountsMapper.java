@@ -17,7 +17,7 @@ import com.styra.demo.accounts.model.Account;
 @Mapper
 public interface AccountsMapper {
 
-    @Select("SELECT account_id, holder_name, balance, account_status, m.manager_id, name, region FROM account JOIN manager m using (manager_id) WHERE account_id = #{id}")
+    @Select("SELECT account_id, holder_name, balance, account_status, m.manager_id, name, region FROM account JOIN manager m using (manager_id) WHERE account_id = #{id} order by account_id")
     @Results(id = "accountResult", value = {
         @Result(property = "id", column = "account_id"),
         @Result(property = "holderName", column = "holder_name"),
