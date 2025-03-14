@@ -17,7 +17,7 @@ namespace GlobalAccountsService.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Account> GetAccountById(int id)
+        public ActionResult<Account> GetAccountById(String id)
         {
             var account = _repository.GetAccountById(id);
             if (account == null)
@@ -34,21 +34,21 @@ namespace GlobalAccountsService.Controllers
         }
 
         [HttpPost("/txfr/{fromId}/{toId}/{amount}")]
-        public IActionResult TransferAmount(int fromId, int toId, decimal amount)
+        public IActionResult TransferAmount(String fromId, String toId, decimal amount)
         {
             _repository.TransferFunds(fromId, toId, amount);
             return NoContent();
         }
 
         [HttpPatch("{id}")]
-        public IActionResult ReactivateAccount(int id)
+        public IActionResult ReactivateAccount(String id)
         {
             _repository.ReactivateAccount(id);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult CloseAccount(int id)
+        public IActionResult CloseAccount(String id)
         {
             _repository.CloseAccount(id);
             return NoContent();

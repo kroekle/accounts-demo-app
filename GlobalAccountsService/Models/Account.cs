@@ -9,6 +9,14 @@ namespace GlobalAccountsService.Models
     {
 
         [JsonPropertyName("id")]
+        [NotMapped]
+        public string AccountIdString
+        {
+            get => AccountId.ToString();
+            set => AccountId = int.Parse(value);
+        }
+
+        [JsonIgnore]
         [Key]
         [Column("account_id")]
         [Required]

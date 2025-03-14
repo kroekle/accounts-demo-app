@@ -13,9 +13,13 @@ namespace GlobalAccountsService.Repositories
             _context = context;
         }
 
-        public Account GetAccountById(int id)
+        public Account GetAccountById(String id)
         {
-            return _context.Accounts.Include(a => a.Manager).FirstOrDefault(a => a.AccountId == id);
+            if (int.TryParse(id, out int accountId))
+            {
+                return _context.Accounts.Include(a => a.Manager).FirstOrDefault(a => a.AccountId == accountId);
+            }
+            return null;
         }
 
         public IEnumerable<Account> GetAccounts()
@@ -24,36 +28,45 @@ namespace GlobalAccountsService.Repositories
         }
 
 
-        public void TransferFunds(int fromId, int toId, decimal amount)
+        public void TransferFunds(String fromId, String toId, decimal amount)
         {
-            var fromAccount = _context.Accounts.Find(fromId);
-            var toAccount = _context.Accounts.Find(toId);
-
-            if (fromAccount != null && toAccount != null && fromAccount.Balance >= amount)
+            if (int.TryParse(fromId, out int fromAccountId) && int.TryParse(toId, out int toAccountId))
             {
-                fromAccount.Balance -= amount;
-                toAccount.Balance += amount;
+                var fromAccount = _context.Accounts.Find(fromAccountId);
+                var toAccount = _context.Accounts.Find(toAccountId);
 
-                _context.SaveChanges();
+                if (fromAccount != null && toAccount != null && fromAccount.Balance >= amount)
+                {
+                    fromAccount.Balance -= amount;
+                    toAccount.Balance += amount;
+
+                    _context.SaveChanges();
+                }
             }
         }
-        public void ReactivateAccount(int id)
+        public void ReactivateAccount(String id)
         {
-            var account = _context.Accounts.Find(id);
-            if (account != null)
+            if (int.TryParse(id, out int accountId))
             {
-                account.Status = "ACTIVE";
-                _context.SaveChanges();
+                var account = _context.Accounts.Find(accountId);
+                if (account != null)
+                {
+                    account.Status = "ACTIVE";
+                    _context.SaveChanges();
+                }
             }
         }
 
-        public void CloseAccount(int id)
+        public void CloseAccount(String id)
         {
-            var account = _context.Accounts.Find(id);
-            if (account != null)
+            if (int.TryParse(id, out int accountId))
             {
-                account.Status = "INACTIVE";
-                _context.SaveChanges();
+                var account = _context.Accounts.Find(accountId);
+                if (account != null)
+                {
+                    account.Status = "INACTIVE";
+                    _context.SaveChanges();
+                }
             }
         }
     }

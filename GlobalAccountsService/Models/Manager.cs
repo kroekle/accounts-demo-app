@@ -8,6 +8,14 @@ namespace GlobalAccountsService.Models
     public class Manager
     {
         [JsonPropertyName("id")]
+        [NotMapped]
+        public string ManagerIdString
+        {
+            get => ManagerId.ToString();
+            set => ManagerId = int.Parse(value);
+        }
+
+        [JsonIgnore]
         [Key]
         [Column("manager_id")]
         [Required]
