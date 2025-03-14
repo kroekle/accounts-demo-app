@@ -379,11 +379,7 @@ module "global_accounts" {
 
   name                      = "global-accounts"
   namespace                 = kubernetes_namespace.accounts.metadata[0].name
-  image                     = "${var.demo_svc_base_image_location}/accounts-service:latest"
-  env_vars = {
-   US_CONTROLLER = "false"
-   PORT          = "80"
-  }
+  image                     = "${var.demo_svc_base_image_location}/accounts-global-service:latest"
   kube_config               = var.kube_config
   kube_context              = var.kube_context
   eopa_license_key          = var.eopa_license_key
