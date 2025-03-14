@@ -23,5 +23,10 @@ namespace GlobalAccountsService.Models
         [Column("name")]
         [Required]
         public string Name { get; set; }
+
+        [JsonIgnore]
+        [Column("us")]
+        [Required]
+        public bool isUs { get; set; }
     }
 }

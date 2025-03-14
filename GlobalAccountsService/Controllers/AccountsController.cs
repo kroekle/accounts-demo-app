@@ -24,34 +24,37 @@ namespace GlobalAccountsService.Controllers
             {
                 return NotFound();
             }
-            return account;
+            return Ok(account);
         }
 
         [HttpGet]
         public ActionResult<IEnumerable<Account>> GetAccounts()
         {
-            return Ok(_repository.GetAccounts());
+            var accounts = _repository.GetAccounts()
+                .Where(a => a.Manager.isUs == false)
+                .OrderBy(a => a.AccountId);
+            return Ok(accounts);
         }
 
         [HttpPost("/txfr/{fromId}/{toId}/{amount}")]
         public IActionResult TransferAmount(String fromId, String toId, decimal amount)
         {
             _repository.TransferFunds(fromId, toId, amount);
-            return NoContent();
+            return Ok();
         }
 
         [HttpPatch("{id}")]
         public IActionResult ReactivateAccount(String id)
         {
             _repository.ReactivateAccount(id);
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("{id}")]
         public IActionResult CloseAccount(String id)
         {
             _repository.CloseAccount(id);
-            return NoContent();
+            return Ok();
         }
     }
 }
