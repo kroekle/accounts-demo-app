@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class PersistenceConfig {
 
     @Bean
-    public DataSource dataSource() {
+    DataSource dataSource() {
         return DataSourceBuilder.create()
                 .driverClassName("org.postgresql.Driver")
                 .url("jdbc:postgresql://postgres:5432/testdb")

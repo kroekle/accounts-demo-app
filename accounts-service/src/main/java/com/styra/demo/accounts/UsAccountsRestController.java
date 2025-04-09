@@ -51,7 +51,7 @@ public class UsAccountsRestController {
     @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
     List<Account> getAccountsByRegion(
-        @RequestParam(name = "region", required = false) String region,
+        @RequestParam(required = false) String region,
         @RequestHeader(name = "x-max-balance", required = false) Long maxBalance,
         @RequestHeader(name = "x-blocked-regions", required = false) String blockedRegions){
         
@@ -63,7 +63,7 @@ public class UsAccountsRestController {
     @Operation(summary = "Get Account")
     @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
-    Account getAccount(@PathVariable("id") int id) {
+    Account getAccount(@PathVariable int id) {
         return accountsMapper.findById(id);
     }
 
@@ -72,7 +72,7 @@ public class UsAccountsRestController {
     @Operation(summary = "Inactivate account")
     @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
-    void closeAccount(@PathVariable("id") int id)  {
+    void closeAccount(@PathVariable int id)  {
         logger.info("Closing account: %v", id);
         accountsMapper.closeAccount(id);
     }
@@ -82,7 +82,7 @@ public class UsAccountsRestController {
     @Operation(summary = "Re-activate account")
     @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
-    void reactivateAccount(@PathVariable("id") int id)  {
+    void reactivateAccount(@PathVariable int id)  {
         logger.info("Reactivating account: %v", id);
         accountsMapper.reactivateAccount(id);
     }
@@ -94,7 +94,7 @@ public class UsAccountsRestController {
     @Tag(name = "accounts", description = "Accounts API")
     @Tag(name = "us", description = "US Regional API")
     void transferFunds(@PathVariable("fromId") int from, @PathVariable("toId") int to,
-            @PathVariable("amount") long amount, HttpServletRequest request)  {
+            @PathVariable long amount, HttpServletRequest request)  {
         logger.info("Transferring %v from %v to %v", amount, from, to);
         accountsMapper.transferFunds(from, to, amount);
     }
