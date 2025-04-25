@@ -12,3 +12,4 @@ terraform/.terraform.lock.hcl
 terraform/us-opa-config.yaml
 terraform/global-opa-config.yaml
 terraform/.terraform.tfstate.lock.info
+GlobalAccountsService/opa.yaml
