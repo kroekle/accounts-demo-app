@@ -26,7 +26,7 @@ namespace GlobalAccountsService.Models
         public string HolderName { get; set; } = string.Empty;
         [Column("balance")]
         [Required]
-        public decimal Balance { get; set; } = 0;
+        public float Balance { get; set; } = 0.0f; // Changed from double to float as an alternative
 
         [Column("account_status")]
         public string Status { get; set; } = "INACTIVE";

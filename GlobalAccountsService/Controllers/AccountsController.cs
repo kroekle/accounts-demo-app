@@ -1,60 +1,136 @@
 using GlobalAccountsService.Models;
 using GlobalAccountsService.Repositories;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 
-namespace GlobalAccountsService.Controllers
+
+// using Styra.Opa;
+using Styra.Ucast.Linq;
+// using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Text.Json;
+// using static Newtonsoft.Json.JsonConvert;
+
+
+
+namespace GlobalAccountsService.Controllers;
+
+public struct CompileUCASTResult
 {
-    [Route("v1/g/accounts")]
-    [ApiController]
-    public class AccountsController : ControllerBase
+    [JsonProperty("result")]
+    public CompileResult Result;
+
+    public struct CompileResult
     {
-        private readonly IAccountsRepository _repository;
+        [JsonProperty("query", NullValueHandling = NullValueHandling.Ignore)]
+        public UCASTNode? Query;
+    }
+}
 
-        public AccountsController(IAccountsRepository repository)
+[Route("v1/g/accounts")]
+[ApiController]
+[Produces(MediaTypeNames.Application.Json)]
+[Consumes(MediaTypeNames.Application.Json)]
+public class AccountsController : ControllerBase
+{
+    private readonly ILogger<AccountsController> _logger;
+    private readonly HttpClient _httpClient = new HttpClient();
+    private readonly IAccountsRepository _repository;
+
+    // private readonly OpaClient _opaClient;
+
+    // public AccountsController(IAccountsRepository repository, ILogger<AccountsController> logger, ILogger<OpaClient> opaLogger)
+    public AccountsController(IAccountsRepository repository, ILogger<AccountsController> logger)
+    {
+        _repository = repository;
+        _logger = logger;
+        // _opaClient = new OpaClient("http://localhost:8181/", opaLogger);
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<Account> GetAccountById(String id)
+    {
+        var account = _repository.GetAccountById(id);
+        if (account == null)
         {
-            _repository = repository;
+            return NotFound();
+        }
+        return Ok(account);
+    }
+
+    [HttpGet]
+    public ActionResult<IEnumerable<Account>> GetAccounts()
+    {
+        var filters = getFilters(Request.Headers);
+
+        var accounts = _repository.GetAccounts()
+            .Where(a => a.Manager.isUs == false)
+            .OrderBy(a => a.AccountId)
+            .AsQueryable();
+
+        if (filters.Result != null && filters.Result.Type != null)
+        {
+            accounts = accounts.ApplyUCASTFilter(filters.Result, new MappingConfiguration<Account>(new Dictionary<string, string> { { "balance", "account.balance" } }, prefix: "account"));
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Account> GetAccountById(String id)
+        return Ok(accounts);
+    }
+
+    private async Task<UCASTNode> getFilters(IHeaderDictionary requestHeaders)
+    {
+        var policyRequest = new
         {
-            var account = _repository.GetAccountById(id);
-            if (account == null)
+            input = new
             {
-                return NotFound();
+                attributes = new
+                {
+                    request = new
+                    {
+                        http = new
+                        {
+                            headers = requestHeaders.ToDictionary(h => h.Key, h => h.Value.ToString())
+                        }
+                    }
+                }
             }
-            return Ok(account);
-        }
+        };
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Account>> GetAccounts()
-        {
-            var accounts = _repository.GetAccounts()
-                .Where(a => a.Manager.isUs == false)
-                .OrderBy(a => a.AccountId);
-            return Ok(accounts);
-        }
+        var policyRequestJson = System.Text.Json.JsonSerializer.Serialize(policyRequest);
+        var content = new StringContent(policyRequestJson, System.Text.Encoding.UTF8, "application/json");
 
-        [HttpPost("/txfr/{fromId}/{toId}/{amount}")]
-        public IActionResult TransferAmount(String fromId, String toId, decimal amount)
-        {
-            _repository.TransferFunds(fromId, toId, amount);
-            return Ok();
-        }
+        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:8181/v1/compile/policy/app/filter");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.styra.ucast.linq+json"));
+        request.Content = content;
+        var response = await _httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
 
-        [HttpPatch("{id}")]
-        public IActionResult ReactivateAccount(String id)
-        {
-            _repository.ReactivateAccount(id);
-            return Ok();
-        }
+        string json = await response.Content.ReadAsStringAsync();
 
-        [HttpDelete("{id}")]
-        public IActionResult CloseAccount(String id)
-        {
-            _repository.CloseAccount(id);
-            return Ok();
-        }
+        CompileUCASTResult node = JsonConvert.DeserializeObject<CompileUCASTResult>(json);
+
+        return node.Result.Query;
+    }
+
+    [HttpPost("/txfr/{fromId}/{toId}/{amount}")]
+    public IActionResult TransferAmount(String fromId, String toId, float amount)
+    {
+        _repository.TransferFunds(fromId, toId, amount);
+        return Ok();
+    }
+
+    [HttpPatch("{id}")]
+    public IActionResult ReactivateAccount(String id)
+    {
+        _repository.ReactivateAccount(id);
+        return Ok();
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult CloseAccount(String id)
+    {
+        _repository.CloseAccount(id);
+        return Ok();
     }
 }

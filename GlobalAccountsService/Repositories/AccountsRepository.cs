@@ -28,7 +28,7 @@ namespace GlobalAccountsService.Repositories
         }
 
 
-        public void TransferFunds(String fromId, String toId, decimal amount)
+        public void TransferFunds(String fromId, String toId, float amount)
         {
             if (int.TryParse(fromId, out int fromAccountId) && int.TryParse(toId, out int toAccountId))
             {

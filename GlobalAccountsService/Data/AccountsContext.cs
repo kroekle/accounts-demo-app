@@ -1,4 +1,3 @@
-// filepath: /Users/kurt/git/accounts-demo-app/global-accounts-service/GlobalAccountsService/Data/AccountsContext.cs
 using Microsoft.EntityFrameworkCore;
 using GlobalAccountsService.Models;
 
