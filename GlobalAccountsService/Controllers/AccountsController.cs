@@ -90,7 +90,7 @@ public class AccountsController : ControllerBase
                     {
                         http = new
                         {
-                            headers = requestHeaders.ToDictionary(h => h.Key, h => h.Value.ToString())
+                            headers = requestHeaders.ToDictionary(h => h.Key.ToLowerInvariant(), h => h.Value.ToString())
                         }
                     }
                 }
@@ -103,6 +103,9 @@ public class AccountsController : ControllerBase
         var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:8181/v1/compile/policy/app/filter");
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.styra.ucast.linq+json"));
         request.Content = content;
+        _logger.LogInformation("Sending request: {Method} {Uri} with headers: {Headers} and body: {Body}",
+            request.Method, request.RequestUri, request.Headers, policyRequestJson);
+
         var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
